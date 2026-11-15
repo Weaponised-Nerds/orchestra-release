@@ -1,0 +1,60 @@
+blueprint:
+  name: Orchestra - Peak quiet
+  description: >-
+    Holds the heavy loads you pick (pool pump, EV charging switch, spa heater and the
+    like) off through the evening peak, 4 pm to 9 pm by default, then switches back on
+    the ones it switched off. Anything you switch on by hand during the peak stays on.
+    While Conductor is soaking up spare power the loads are left alone. The window is
+    on calendar.orchestra_today. Skip today and the rhythm's switch
+    (switch.orchestra_rhythm_peak_quiet) pause it.
+  domain: automation
+  author: Weaponised Nerds
+  homeassistant:
+    min_version: "2024.10.0"
+  source_url: https://github.com/Weaponised-Nerds/orchestra/blob/main/custom_components/orchestra/blueprints/automation/orchestra_peak_quiet.yaml
+  input:
+    loads:
+      name: Heavy loads to hold off
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: [switch, input_boolean]
+          multiple: true
+    today_calendar:
+      name: Orchestra today calendar
+      default: calendar.orchestra_today
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: calendar
+
+mode: queued
+max: 5
+max_exceeded: silent
+
+triggers:
+  - trigger: calendar
+    event: start
+    entity_id: !input today_calendar
+    id: start
+  - trigger: calendar
+    event: end
+    entity_id: !input today_calendar
+    id: end
+
+variables:
+  loads: !input loads
+
+conditions:
+  - condition: template
+    value_template: "{{ '[orchestra:peak_quiet:' in (trigger.calendar_event.description | default('')) }}"
+
+actions:
+  - action: orchestra.rhythm_step
+    data:
+      rhythm: peak_quiet
+      phase: "{{ trigger.id }}"
+      group: evening
+      entity_id: "{{ loads }}"

@@ -1,0 +1,130 @@
+apply_hvac_offset:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: climate
+          multiple: true
+    offset_sensor:
+      default: sensor.orchestra_hvac_setpoint_offset
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: sensor
+    invert_shed_when_heating:
+      default: true
+      selector:
+        boolean: {}
+    skip_when_off:
+      default: true
+      selector:
+        boolean: {}
+    turn_on_for_pre:
+      default: true
+      selector:
+        boolean: {}
+apply_heat_pump:
+  fields:
+    entity_id:
+      selector:
+        entity:
+          filter:
+            - domain: [water_heater, climate, switch]
+          multiple: true
+    power_switch:
+      selector:
+        entity:
+          multiple: true
+    target_sensor:
+      default: sensor.orchestra_heat_pump_target_temp
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: sensor
+    boost_operation_mode:
+      selector:
+        text: {}
+    normal_operation_mode:
+      selector:
+        text: {}
+    coast_operation_mode:
+      selector:
+        text: {}
+    boost_temperature:
+      selector:
+        number: {min: 0, max: 80, step: 0.5, unit_of_measurement: °C, mode: box}
+    coast_temperature:
+      selector:
+        number: {min: 0, max: 80, step: 0.5, unit_of_measurement: °C, mode: box}
+    normal_temperature:
+      selector:
+        number: {min: 0, max: 80, step: 0.5, unit_of_measurement: °C, mode: box}
+rhythm_step:
+  fields:
+    rhythm:
+      required: true
+      selector:
+        select:
+          options: [heat_shield, morning_open_up, peak_quiet]
+    phase:
+      default: start
+      selector:
+        select:
+          options: [start, end]
+    group:
+      selector:
+        text: {}
+    entity_id:
+      selector:
+        entity:
+          multiple: true
+skip_today: {}
+cooler_please: {}
+send_rhythm_headsup:
+  fields:
+    force:
+      default: false
+      selector:
+        boolean: {}
+set_rhythm_settings:
+  fields:
+    headsup_time:
+      selector:
+        text: {}
+    quiet_start:
+      selector:
+        text: {}
+    quiet_end:
+      selector:
+        text: {}
+    wake_time:
+      selector:
+        text: {}
+    open_up_earliest:
+      selector:
+        text: {}
+    peak_start:
+      selector:
+        text: {}
+    peak_end:
+      selector:
+        text: {}
+    hot_day_c:
+      selector:
+        number: {min: 15, max: 45, step: 0.5, unit_of_measurement: °C, mode: box}
+    notify_targets:
+      selector:
+        text:
+          multiple: true
+    weather_entity:
+      selector:
+        entity:
+          filter:
+            - domain: weather
+    enabled:
+      selector:
+        object: {}

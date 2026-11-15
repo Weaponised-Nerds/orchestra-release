@@ -1,0 +1,238 @@
+# Conductor theme for Home Assistant
+# Matches the Conductor web app (conductor.deezlepower.com): petrol and teal,
+# Manrope / Inter / IBM Plex Mono, flat cards with 1px borders, dark top bar in both modes.
+# Tokens: /brand/conductor-tokens.css and the app's public/css/brand.css.
+# Fonts are not loaded by this file. See README.md for adding them.
+
+Conductor:
+  # ---- Shared by both modes -------------------------------------------------
+
+  # Typography
+  primary-font-family: '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif'
+  paper-font-common-base_-_font-family: '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif'
+  paper-font-common-code_-_font-family: '"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace'
+  paper-font-body1_-_font-family: '"Inter", system-ui, sans-serif'
+  paper-font-subhead_-_font-family: '"Inter", system-ui, sans-serif'
+  paper-font-headline_-_font-family: '"Manrope", "Inter", system-ui, sans-serif'
+  paper-font-title_-_font-family: '"Manrope", "Inter", system-ui, sans-serif'
+  mdc-typography-font-family: '"Inter", system-ui, sans-serif'
+  ha-font-family-body: '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif'
+  ha-font-family-heading: '"Manrope", "Inter", system-ui, sans-serif'
+  ha-font-family-code: '"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace'
+  ha-card-header-font-family: '"Manrope", "Inter", system-ui, sans-serif'
+  app-header-font-family: '"Manrope", "Inter", system-ui, sans-serif'
+
+  # Shape: flat cards separated by a border, not a shadow
+  ha-card-border-radius: 8px
+  ha-card-border-width: 1px
+  ha-card-box-shadow: none
+  ha-dialog-border-radius: 12px
+  ha-border-radius-sm: 4px
+  ha-border-radius-md: 8px
+  ha-border-radius-lg: 12px
+  mdc-shape-small: 4px
+  mdc-shape-medium: 8px
+  mdc-shape-large: 12px
+  ha-badge-border-radius: 4px
+
+  # Top bar: deep in both modes, like the app
+  app-header-background-color: "#0A2129"
+  app-header-text-color: "#FFFFFF"
+  app-header-edit-background-color: "#1C4652"
+  app-header-edit-text-color: "#FFFFFF"
+  app-header-border-bottom: "1px solid #23434B"
+  app-header-selection-bar-color: "#3BAFB0"
+
+  modes:
+    # ---- Light (Paper) ------------------------------------------------------
+    light:
+      primary-color: "#1F7A7A"
+      dark-primary-color: "#0E2A33"
+      light-primary-color: "#DCEBEA"
+      accent-color: "#1F7A7A"
+      rgb-primary-color: "31, 122, 122"
+      rgb-accent-color: "31, 122, 122"
+      text-primary-color: "#FFFFFF"
+      text-light-primary-color: "#14262C"
+      mdc-theme-primary: "#1F7A7A"
+      mdc-theme-secondary: "#1F7A7A"
+      mdc-theme-on-primary: "#FFFFFF"
+
+      primary-background-color: "#F6F8F7"
+      secondary-background-color: "#F6F8F7"
+      lovelace-background: "#F6F8F7"
+      card-background-color: "#FFFFFF"
+      ha-card-background: "#FFFFFF"
+      ha-card-border-color: "#C4C6C5"
+      ha-dialog-surface-background: "#FFFFFF"
+      mdc-theme-surface: "#FFFFFF"
+      clear-background-color: "#FFFFFF"
+
+      primary-text-color: "#14262C"
+      rgb-primary-text-color: "20, 38, 44"
+      secondary-text-color: "#4A5A60"
+      ha-card-header-color: "#0E2A33"
+      disabled-text-color: "#B0BCBB"
+      divider-color: "#E4E6E5"
+      outline-color: "#C4C6C5"
+      mdc-theme-text-primary-on-background: "#14262C"
+      mdc-theme-text-secondary-on-background: "#4A5A60"
+
+      sidebar-background-color: "#FFFFFF"
+      sidebar-text-color: "#14262C"
+      sidebar-icon-color: "#4A5A60"
+      sidebar-selected-text-color: "#0E2A33"
+      sidebar-selected-icon-color: "#1F7A7A"
+      sidebar-menu-button-background-color: "#0A2129"
+      sidebar-menu-button-text-color: "#FFFFFF"
+
+      state-icon-color: "#4A5A60"
+      paper-item-icon-color: "#4A5A60"
+      state-icon-active-color: "#1F7A7A"
+      paper-item-icon-active-color: "#1F7A7A"
+      state-active-color: "#1F7A7A"
+      state-inactive-color: "#B0BCBB"
+      state-on-color: "#1F7A7A"
+      state-off-color: "#B0BCBB"
+      state-unavailable-color: "#C9D6D5"
+      history-unavailable-color: "#E4E6E5"
+      history-unknown-color: "#C9D6D5"
+
+      success-color: "#1F7A7A"
+      info-color: "#4A5A60"
+      warning-color: "#A8701A"
+      error-color: "#9A3F2C"
+
+      switch-checked-color: "#1F7A7A"
+      switch-checked-button-color: "#1F7A7A"
+      switch-checked-track-color: "#1F7A7A"
+      switch-unchecked-button-color: "#FFFFFF"
+      switch-unchecked-track-color: "#B0BCBB"
+      slider-color: "#1F7A7A"
+      slider-bar-color: "#C9D6D5"
+      paper-slider-knob-color: "#1F7A7A"
+      paper-slider-active-color: "#1F7A7A"
+      paper-slider-container-color: "#C9D6D5"
+
+      input-fill-color: "#FFFFFF"
+      input-disabled-fill-color: "#F6F8F7"
+      input-ink-color: "#14262C"
+      input-label-ink-color: "#4A5A60"
+      input-idle-line-color: "#C4C6C5"
+      input-hover-line-color: "#4A5A60"
+      input-outlined-idle-border-color: "#C4C6C5"
+      input-outlined-hover-border-color: "#4A5A60"
+      mdc-text-field-fill-color: "#FFFFFF"
+      mdc-select-fill-color: "#FFFFFF"
+
+      code-editor-background-color: "#F6F8F7"
+      markdown-code-background-color: "#DCEBEA"
+      table-row-background-color: "#FFFFFF"
+      table-row-alternative-background-color: "#F6F8F7"
+      data-table-background-color: "#FFFFFF"
+
+      # Energy dashboard: teal for "ours", deep for the grid benchmark, fog for neutral
+      energy-grid-consumption-color: "#0E2A33"
+      energy-grid-return-color: "#4A5A60"
+      energy-solar-color: "#D49A1E"
+      energy-non-fossil-color: "#1F7A7A"
+      energy-battery-out-color: "#1F7A7A"
+      energy-battery-in-color: "#3BAFB0"
+      energy-gas-color: "#9A3F2C"
+      energy-water-color: "#557A92"
+
+    # ---- Dark (Deep) --------------------------------------------------------
+    dark:
+      primary-color: "#3BAFB0"
+      dark-primary-color: "#1F7A7A"
+      light-primary-color: "#1C4652"
+      accent-color: "#3BAFB0"
+      rgb-primary-color: "59, 175, 176"
+      rgb-accent-color: "59, 175, 176"
+      text-primary-color: "#0E2A33"
+      text-light-primary-color: "#DCEBEA"
+      mdc-theme-primary: "#3BAFB0"
+      mdc-theme-secondary: "#3BAFB0"
+      mdc-theme-on-primary: "#0E2A33"
+
+      primary-background-color: "#0E2A33"
+      secondary-background-color: "#0E2A33"
+      lovelace-background: "#0E2A33"
+      card-background-color: "#13323C"
+      ha-card-background: "#13323C"
+      ha-card-border-color: "#23434B"
+      ha-dialog-surface-background: "#13323C"
+      mdc-theme-surface: "#13323C"
+      clear-background-color: "#0E2A33"
+
+      primary-text-color: "#DCEBEA"
+      rgb-primary-text-color: "220, 235, 234"
+      secondary-text-color: "#8FA3A8"
+      ha-card-header-color: "#FFFFFF"
+      disabled-text-color: "#3D5A62"
+      divider-color: "#1A3A44"
+      outline-color: "#23434B"
+      mdc-theme-text-primary-on-background: "#DCEBEA"
+      mdc-theme-text-secondary-on-background: "#8FA3A8"
+
+      sidebar-background-color: "#0A2129"
+      sidebar-text-color: "#DCEBEA"
+      sidebar-icon-color: "#8FA3A8"
+      sidebar-selected-text-color: "#FFFFFF"
+      sidebar-selected-icon-color: "#3BAFB0"
+      sidebar-menu-button-background-color: "#0A2129"
+      sidebar-menu-button-text-color: "#FFFFFF"
+
+      state-icon-color: "#8FA3A8"
+      paper-item-icon-color: "#8FA3A8"
+      state-icon-active-color: "#3BAFB0"
+      paper-item-icon-active-color: "#3BAFB0"
+      state-active-color: "#3BAFB0"
+      state-inactive-color: "#3D5A62"
+      state-on-color: "#3BAFB0"
+      state-off-color: "#3D5A62"
+      state-unavailable-color: "#2A4A53"
+      history-unavailable-color: "#1A3A44"
+      history-unknown-color: "#2A4A53"
+
+      success-color: "#3BAFB0"
+      info-color: "#8FA3A8"
+      warning-color: "#E8B13A"
+      error-color: "#E07A62"
+
+      switch-checked-color: "#3BAFB0"
+      switch-checked-button-color: "#3BAFB0"
+      switch-checked-track-color: "#3BAFB0"
+      switch-unchecked-button-color: "#8FA3A8"
+      switch-unchecked-track-color: "#2A4A53"
+      slider-color: "#3BAFB0"
+      slider-bar-color: "#2A4A53"
+      paper-slider-knob-color: "#3BAFB0"
+      paper-slider-active-color: "#3BAFB0"
+      paper-slider-container-color: "#2A4A53"
+
+      input-fill-color: "#13323C"
+      input-disabled-fill-color: "#0E2A33"
+      input-ink-color: "#DCEBEA"
+      input-label-ink-color: "#8FA3A8"
+      input-idle-line-color: "#23434B"
+      input-hover-line-color: "#8FA3A8"
+      input-outlined-idle-border-color: "#23434B"
+      input-outlined-hover-border-color: "#8FA3A8"
+      mdc-text-field-fill-color: "#13323C"
+      mdc-select-fill-color: "#13323C"
+
+      code-editor-background-color: "#0A2129"
+      markdown-code-background-color: "#1C4652"
+      table-row-background-color: "#13323C"
+      table-row-alternative-background-color: "#0E2A33"
+      data-table-background-color: "#13323C"
+
+      energy-grid-consumption-color: "#DCEBEA"
+      energy-grid-return-color: "#8FA3A8"
+      energy-solar-color: "#E8B13A"
+      energy-non-fossil-color: "#3BAFB0"
+      energy-battery-out-color: "#3BAFB0"
+      energy-battery-in-color: "#1F7A7A"
+      energy-gas-color: "#E07A62"
+      energy-water-color: "#8DB4CC"

@@ -1,0 +1,242 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Orchestra",
+        "description": "Configure the Orchestra edge node and Conductor market broadcast receiver.",
+        "data": {
+          "node_id": "Edge Node ID",
+          "ngangk_api_url": "Ngangk Forecast API URL",
+          "conductor_ws_url": "Conductor Broadcast WebSocket URL"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Orchestra is already configured on this Home Assistant instance."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "wem_operational_demand": {
+        "name": "WEM Operational Demand"
+      },
+      "wem_wholesale_price": {
+        "name": "WEM Wholesale Price"
+      },
+      "wem_renewable_availability": {
+        "name": "WEM Renewable Availability"
+      },
+      "conductor_control_signal": {
+        "name": "Conductor Control Signal"
+      },
+      "ac_dispatch_mode": {
+        "name": "A/C Dispatch Mode"
+      },
+      "counterfactual_shed_power": {
+        "name": "Verified Demand Response Shed"
+      },
+      "accumulated_dividend_aud": {
+        "name": "Homeowner Load-Shed Dividend"
+      },
+      "hvac_setpoint_offset": {
+        "name": "HVAC Setpoint Offset"
+      },
+      "ev_target_amps": {
+        "name": "EV Target Amps"
+      },
+      "heat_pump_target_temp": {
+        "name": "Heat Pump Target Temperature"
+      },
+      "home_battery_min_reserve": {
+        "name": "Home Battery Minimum Reserve"
+      }
+    },
+    "binary_sensor": {
+      "ev_charge_now": {
+        "name": "EV Charge Now"
+      },
+      "heat_pump_run_now": {
+        "name": "Heat Pump Run Now"
+      },
+      "ac_precool": {
+        "name": "A/C Pre-Cool"
+      },
+      "ac_preheat": {
+        "name": "A/C Pre-Heat"
+      },
+      "home_battery_storm_watch": {
+        "name": "Home Battery Charge Storm Watch"
+      }
+    },
+    "select": {
+      "conductor_dispatch_mode": {
+        "name": "Conductor Dispatch Mode"
+      }
+    },
+    "switch": {
+      "conductor_customer_opt_out": {
+        "name": "Conductor Customer Opt-Out"
+      }
+    }
+  },
+  "services": {
+    "apply_hvac_offset": {
+      "name": "Apply HVAC setpoint offset",
+      "description": "Drift A/C setpoints by the Conductor offset from each unit's own starting setpoint, and restore it when the offset is 0. Safe to call repeatedly.",
+      "fields": {
+        "entity_id": {
+          "name": "Air conditioners",
+          "description": "The climate entities to drift."
+        },
+        "offset_sensor": {
+          "name": "Offset sensor",
+          "description": "The Orchestra setpoint offset sensor to follow."
+        },
+        "invert_shed_when_heating": {
+          "name": "Shed downwards when heating",
+          "description": "Apply a load-shed offset as a drop while the unit is heating."
+        },
+        "skip_when_off": {
+          "name": "Leave units alone while off",
+          "description": "Don't start a drift on a unit whose HVAC mode is off."
+        },
+        "turn_on_for_pre": {
+          "name": "Switch on for pre-heat and pre-cool",
+          "description": "Switch an off unit on for pre-heat or pre-cool, and back off when it ends."
+        }
+      }
+    },
+    "apply_heat_pump": {
+      "name": "Apply heat pump signal",
+      "description": "Switch heat pumps on for Energy Soak and off for Load Shed, and put each back to what it was doing before on Normal. Safe to call repeatedly.",
+      "fields": {
+        "entity_id": {
+          "name": "Heat pumps",
+          "description": "Water heaters, climates or switches. With a power switch, these only get their temperature set and restored."
+        },
+        "power_switch": {
+          "name": "Power switches",
+          "description": "Entities that switch the heat pumps on and off."
+        },
+        "target_sensor": {
+          "name": "Target sensor",
+          "description": "The Orchestra heat pump target sensor to follow."
+        },
+        "boost_operation_mode": {
+          "name": "Energy Soak operation mode",
+          "description": "Water heater operation mode while soaking."
+        },
+        "normal_operation_mode": {
+          "name": "Normal operation mode",
+          "description": "Mode to set when the event ends (otherwise the remembered one)."
+        },
+        "coast_operation_mode": {
+          "name": "Coast operation mode",
+          "description": "Mode to set when Load Shed starts."
+        },
+        "boost_temperature": {
+          "name": "Boost setpoint",
+          "description": "Temperature for Energy Soak; 0 uses Conductor's target."
+        },
+        "coast_temperature": {
+          "name": "Coast setpoint",
+          "description": "Temperature set when Load Shed starts; 0 leaves it."
+        },
+        "normal_temperature": {
+          "name": "Normal setpoint",
+          "description": "Temperature set when the event ends; 0 restores the previous one."
+        }
+      }
+    },
+    "rhythm_step": {
+      "name": "Run a rhythm step",
+      "description": "Called by the Orchestra rhythm blueprints at the start and end of each event on the Orchestra today calendar. Moves the devices and remembers them, so the end of the step puts back only what is still where Orchestra left it.",
+      "fields": {
+        "rhythm": {
+          "name": "Rhythm",
+          "description": "heat_shield, morning_open_up or peak_quiet."
+        },
+        "phase": {
+          "name": "Phase",
+          "description": "start moves the devices; end puts them back."
+        },
+        "group": {
+          "name": "Group",
+          "description": "Which step of the rhythm, such as west for the heat shield's west-facing blinds."
+        },
+        "entity_id": {
+          "name": "Devices",
+          "description": "The blinds, curtains or switches for this step."
+        }
+      }
+    },
+    "skip_today": {
+      "name": "Skip today",
+      "description": "Pauses every rhythm and Conductor until midnight, and puts back what the rhythms moved."
+    },
+    "cooler_please": {
+      "name": "Cooler please",
+      "description": "Ends Conductor easing the A/C for the current event, and eases it 0.5 °C less for a week."
+    },
+    "send_rhythm_headsup": {
+      "name": "Send the morning heads-up",
+      "description": "Sends today's heads-up now.",
+      "fields": {
+        "force": {
+          "name": "Even on a normal day",
+          "description": "Send it even when nothing out of the ordinary is planned."
+        }
+      }
+    },
+    "set_rhythm_settings": {
+      "name": "Change rhythm settings",
+      "description": "Times are 24-hour HH:MM.",
+      "fields": {
+        "headsup_time": {
+          "name": "Heads-up time",
+          "description": "When the morning heads-up is sent (default 07:00)."
+        },
+        "quiet_start": {
+          "name": "Quiet hours start",
+          "description": "No notifications from this time (default 21:00)."
+        },
+        "quiet_end": {
+          "name": "Quiet hours end",
+          "description": "Notifications again from this time (default 07:00)."
+        },
+        "wake_time": {
+          "name": "Wake time",
+          "description": "When bedroom blinds open (default 07:00)."
+        },
+        "open_up_earliest": {
+          "name": "Earliest open-up",
+          "description": "Living area blinds open at sunrise but not before this (default 06:00)."
+        },
+        "peak_start": {
+          "name": "Peak start",
+          "description": "Start of the evening peak (default 16:00)."
+        },
+        "peak_end": {
+          "name": "Peak end",
+          "description": "End of the evening peak (default 21:00)."
+        },
+        "hot_day_c": {
+          "name": "Hot day",
+          "description": "Forecast maximum at or above which the heat shield runs (default 28 °C)."
+        },
+        "notify_targets": {
+          "name": "Notify",
+          "description": "Notify services for the heads-up, such as mobile_app_kitchen_tablet. Empty sends to every companion app."
+        },
+        "weather_entity": {
+          "name": "Weather",
+          "description": "Where the forecast comes from. Empty uses the first weather entity."
+        },
+        "enabled": {
+          "name": "Rhythms on",
+          "description": "Map of rhythm to true or false."
+        }
+      }
+    }
+  }
+}

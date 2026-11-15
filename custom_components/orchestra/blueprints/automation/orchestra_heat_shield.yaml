@@ -1,0 +1,148 @@
+blueprint:
+  name: Orchestra - Heat shield
+  description: >-
+    On hot days, shuts the blinds and curtains on each side of the house while the sun
+    is on that side, then opens the ones that are still shut. Orchestra plans the times
+    each morning from the sun's path and the forecast, and shows them on
+    calendar.orchestra_today. Works with or without Conductor.
+
+
+    When Conductor starts pre-cooling, every blind listed here shuts to keep the cool
+    in, and opens again at sunset. Blinds whose facing you don't know go under
+    "facing unknown": they shut only for Conductor pre-cooling.
+
+
+    A blind you open or close by hand is left alone until the next step. Skip today
+    and the rhythm's switch (switch.orchestra_rhythm_heat_shield) pause it.
+  domain: automation
+  author: Weaponised Nerds
+  homeassistant:
+    min_version: "2024.10.0"
+  source_url: https://github.com/Weaponised-Nerds/orchestra/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_shield.yaml
+  input:
+    east_covers:
+      name: East-facing blinds and curtains
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: cover
+          multiple: true
+    north_covers:
+      name: North-facing blinds and curtains
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: cover
+          multiple: true
+    west_covers:
+      name: West-facing blinds and curtains
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: cover
+          multiple: true
+    south_covers:
+      name: South-facing blinds and curtains
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: cover
+          multiple: true
+    unknown_covers:
+      name: Blinds and curtains, facing unknown
+      description: These shut only while Conductor pre-cools. Move them to a side once you know it.
+      default: []
+      selector:
+        entity:
+          filter:
+            - domain: cover
+          multiple: true
+    today_calendar:
+      name: Orchestra today calendar
+      default: calendar.orchestra_today
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: calendar
+    precool_sensor:
+      name: Orchestra A/C pre-cool sensor
+      default: binary_sensor.orchestra_ac_precool
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: binary_sensor
+
+mode: queued
+max: 10
+max_exceeded: silent
+
+triggers:
+  - trigger: calendar
+    event: start
+    entity_id: !input today_calendar
+    id: start
+  - trigger: calendar
+    event: end
+    entity_id: !input today_calendar
+    id: end
+  - trigger: state
+    entity_id: !input precool_sensor
+    from: "off"
+    to: "on"
+    id: precool
+  - trigger: sun
+    event: sunset
+    id: sunset
+
+variables:
+  sides:
+    east: !input east_covers
+    north: !input north_covers
+    west: !input west_covers
+    south: !input south_covers
+  unknown_covers: !input unknown_covers
+
+conditions:
+  - condition: template
+    value_template: >-
+      {{ trigger.id in ['precool', 'sunset']
+         or '[orchestra:heat_shield:' in (trigger.calendar_event.description | default('')) }}
+
+actions:
+  - choose:
+      - conditions: "{{ trigger.id in ['start', 'end'] }}"
+        sequence:
+          - variables:
+              group: >-
+                {{ trigger.calendar_event.description
+                   | regex_findall('\\[orchestra:heat_shield:([a-z0-9]+)\\]') | first | default('') }}
+              side: "{{ group | regex_replace('[0-9]+$', '') }}"
+              covers: "{{ sides.get(side, []) }}"
+          - action: orchestra.rhythm_step
+            data:
+              rhythm: heat_shield
+              phase: "{{ trigger.id }}"
+              group: "{{ group }}"
+              entity_id: "{{ covers }}"
+      - conditions: "{{ trigger.id == 'precool' }}"
+        sequence:
+          - action: orchestra.rhythm_step
+            data:
+              rhythm: heat_shield
+              phase: start
+              group: precool
+              entity_id: >-
+                {{ (sides.east + sides.north + sides.west + sides.south + unknown_covers) | unique | list }}
+      - conditions: "{{ trigger.id == 'sunset' }}"
+        sequence:
+          - action: orchestra.rhythm_step
+            data:
+              rhythm: heat_shield
+              phase: end
+              group: precool

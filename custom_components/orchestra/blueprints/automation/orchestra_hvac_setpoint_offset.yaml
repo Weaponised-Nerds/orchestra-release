@@ -1,0 +1,102 @@
+blueprint:
+  name: Orchestra - HVAC setpoint drift from Conductor
+  description: >-
+    Drifts air conditioner setpoints by the Conductor `hvac.setpoint_offset_c`
+    directive, starting from whatever each one is currently set to, and puts them back
+    afterwards.
+
+
+    Pick the climate entities whose setpoint actually drives the unit. For a zoned
+    system using zone temperature control (AirTouch, for example), that is the zones:
+    the A/C's own setpoint follows them and ignores anything set on it directly.
+
+
+    Orchestra remembers the starting setpoint, so every frame sets starting setpoint +
+    offset (1.5 then 2.0 on a 23 °C unit gives 24.5 then 25, never compounding), and an
+    offset of 0 (normal schedule, outside this home's tranche, opt-out, or WAN fallback)
+    restores it. A setpoint changed by hand mid-event becomes the new starting point.
+    The drift is applied as soon as the automation is saved, at startup, and checked
+    every 5 minutes, so an offset that was already active is picked up.
+  domain: automation
+  author: Weaponised Nerds
+  homeassistant:
+    min_version: "2024.10.0"
+  source_url: https://github.com/Weaponised-Nerds/orchestra/blob/main/custom_components/orchestra/blueprints/automation/orchestra_hvac_setpoint_offset.yaml
+  input:
+    climate_entity:
+      name: Air conditioners or zones
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: climate
+    offset_sensor:
+      name: Orchestra setpoint offset sensor
+      default: sensor.orchestra_hvac_setpoint_offset
+      selector:
+        entity:
+          filter:
+            - integration: orchestra
+              domain: sensor
+    skip_when_off:
+      name: Leave the unit alone while it is off
+      description: Don't start a drift on a unit whose HVAC mode is off.
+      default: true
+      selector:
+        boolean: {}
+    turn_on_for_pre:
+      name: Switch on for pre-heat and pre-cool
+      description: >-
+        Switch a unit that is off on (in heat or cool) for a Conductor pre-heat or
+        pre-cool, and back off when it ends. A unit switched off by hand during the
+        event is left off.
+      default: true
+      selector:
+        boolean: {}
+    invert_shed_when_heating:
+      name: Shed downwards when heating
+      description: >-
+        A load-shed offset raises the setpoint, which only saves energy when cooling.
+        When the unit is in heat mode, apply a shed offset as a drop instead.
+      default: true
+      selector:
+        boolean: {}
+    baseline_helper:
+      name: Baseline setpoint helper (no longer used)
+      description: Orchestra now remembers the starting setpoint itself. Leave empty.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: input_number
+
+mode: queued
+max: 10
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input offset_sensor
+    to: null
+  # HVAC mode changes, e.g. the unit being switched on during an active drift
+  - trigger: state
+    entity_id: !input climate_entity
+    to: null
+  # Saving this automation reloads automations; pick up an offset that is already active
+  - trigger: event
+    event_type: automation_reloaded
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    minutes: /5
+
+actions:
+  # The response (offset, setpoints and the reason for what was done) shows in the trace
+  - action: orchestra.apply_hvac_offset
+    response_variable: drift
+    data:
+      entity_id: !input climate_entity
+      offset_sensor: !input offset_sensor
+      skip_when_off: !input skip_when_off
+      turn_on_for_pre: !input turn_on_for_pre
+      invert_shed_when_heating: !input invert_shed_when_heating
