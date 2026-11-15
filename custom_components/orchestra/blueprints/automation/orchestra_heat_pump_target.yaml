@@ -20,7 +20,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_pump_target.yaml
+  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_pump_target.yaml
   input:
     water_heater:
       name: Heat pump (water heater, climate or switch)

@@ -47,6 +47,11 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     # Leave empty to use the first weather entity
     "weather_entity": "",
     "enabled": {key: True for key in RHYTHMS},
+    # Tell the household when a Conductor event starts (event_notify.py)
+    "event_notifications": True,
+    # A retailer program that pays for taking part, shown in event notices when set
+    "incentive_program": "",
+    "incentive_aud_per_kwh": 0.0,
 }
 
 # A window gets direct sun while the sun is above this elevation and within this many

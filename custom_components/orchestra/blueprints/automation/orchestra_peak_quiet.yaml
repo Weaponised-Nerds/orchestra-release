@@ -11,7 +11,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra/blob/main/custom_components/orchestra/blueprints/automation/orchestra_peak_quiet.yaml
+  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_peak_quiet.yaml
   input:
     loads:
       name: Heavy loads to hold off

@@ -128,3 +128,13 @@ set_rhythm_settings:
     enabled:
       selector:
         object: {}
+    event_notifications:
+      selector:
+        boolean: {}
+    incentive_program:
+      selector:
+        text: {}
+    incentive_aud_per_kwh:
+      selector:
+        number: {min: 0, max: 10, step: 0.01, unit_of_measurement: $/kWh, mode: box}
+skip_event: {}

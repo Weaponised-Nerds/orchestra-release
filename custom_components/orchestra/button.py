@@ -13,7 +13,11 @@ from .rhythm_entity import RhythmEntity
 async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> None:
     engine = hass.data[DOMAIN].get("rhythms")
     if engine is not None:
-        async_add_entities([OrchestraSkipTodayButton(engine), OrchestraCoolerPleaseButton(engine)])
+        buttons = [OrchestraSkipTodayButton(engine), OrchestraCoolerPleaseButton(engine)]
+        notifier = hass.data[DOMAIN].get("event_notifier")
+        if notifier is not None:
+            buttons.append(OrchestraSkipEventButton(engine, notifier))
+        async_add_entities(buttons)
 
 
 class OrchestraSkipTodayButton(RhythmEntity, ButtonEntity):
@@ -38,3 +42,16 @@ class OrchestraCoolerPleaseButton(RhythmEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         await self.engine.async_cooler_please()
+
+
+class OrchestraSkipEventButton(RhythmEntity, ButtonEntity):
+    """Runs the current Conductor event on the normal schedule; the next event applies as usual."""
+
+    def __init__(self, engine: Any, notifier: Any) -> None:
+        super().__init__(engine, "skip_event", "button.orchestra_skip_event")
+        self._notifier = notifier
+        self._attr_name = "Orchestra skip this event"
+        self._attr_icon = "mdi:debug-step-over"
+
+    async def async_press(self) -> None:
+        await self._notifier.async_skip_event()

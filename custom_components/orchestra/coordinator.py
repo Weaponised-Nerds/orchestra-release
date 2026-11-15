@@ -146,6 +146,11 @@ class OrchestraDispatchState:
     # Tranche targeting: asset classes whose directive cohort range excluded this home
     excluded_assets: list[str] = field(default_factory=list)
 
+    # A payment for taking part, when the frame carries one: {"program", "aud_per_kwh"}
+    incentive: dict[str, Any] = field(default_factory=dict)
+    # The household skipped the current event: its assets run their normal schedule
+    event_skipped: bool = False
+
 
 @dataclass
 class OrchestraCoordinatorData:
@@ -191,6 +196,9 @@ class OrchestraDataUpdateCoordinator:
         self._is_stopped = False
         # The rhythm engine softens warming A/C offsets after "cooler please" (rhythms.py)
         self.comfort_hook: Callable[[float, Any], float] | None = None
+        # "Skip this event": frames with this control signal are held at the normal schedule
+        # until a different signal arrives
+        self.skipped_signal: str | None = None
 
     def effective_ac_offset(self) -> float:
         """The A/C setpoint offset after the household's comfort limits."""
@@ -219,8 +227,32 @@ class OrchestraDataUpdateCoordinator:
 
         return _remove
 
+    def skip_event(self) -> None:
+        """The household's "skip this event": the current event runs the normal schedule."""
+        signal = self.data.dispatch.control_signal
+        if signal in (SIGNAL_NORMAL_AUTO, SIGNAL_OPT_OUT):
+            return
+        self.skipped_signal = signal
+        self.async_update_listeners()
+
+    def _apply_event_skip(self) -> None:
+        disp = self.data.dispatch
+        if self.skipped_signal is None or disp.opted_out:
+            disp.event_skipped = False
+            return
+        if disp.control_signal != self.skipped_signal:
+            # A new event (or the normal schedule): the skip has done its job
+            self.skipped_signal = None
+            disp.event_skipped = False
+            return
+        for asset in (ASSET_EV, ASSET_HEAT_PUMP, ASSET_HVAC, ASSET_HOME_BATTERY):
+            self._apply_asset_normal(asset, "Skipped by the household for this event")
+        disp.excluded_assets = []
+        disp.event_skipped = True
+
     def async_update_listeners(self) -> None:
         """Notify all registered entities of updated data."""
+        self._apply_event_skip()
         for callback in list(self._listeners):
             try:
                 callback()
@@ -531,6 +563,8 @@ class OrchestraDataUpdateCoordinator:
         disp.dispatch_id = dispatch_id
         disp.control_signal = control_signal
         disp.signal_source = "conductor_push"
+        incentive = payload.get("incentive")
+        disp.incentive = dict(incentive) if isinstance(incentive, dict) else {}
         disp.reason = reason
         disp.valid_until = valid_until
 

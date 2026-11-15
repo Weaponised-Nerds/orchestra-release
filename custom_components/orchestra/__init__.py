@@ -263,6 +263,9 @@ async def _async_start_rhythms(hass: Any) -> None:
         return
     try:
         await async_setup_rhythms(hass)
+        from .event_notify import async_setup_event_notifier
+
+        await async_setup_event_notifier(hass)
     except Exception as err:  # Conductor control keeps working without rhythms
         _LOGGER.warning("Orchestra rhythms not started: %s", err)
 
@@ -335,6 +338,9 @@ async def async_unload_entry(hass: Any, entry: Any) -> bool:
         subscriber = hass.data[DOMAIN].get("subscriber")
         if subscriber:
             await subscriber.async_stop()
+        notifier = hass.data[DOMAIN].pop("event_notifier", None)
+        if notifier:
+            notifier.async_stop()
         rhythms = hass.data[DOMAIN].get("rhythms")
         if rhythms:
             rhythms.async_stop()

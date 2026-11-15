@@ -35,15 +35,19 @@ MAX_ZIP_BYTES = 30 * 1024 * 1024
 # Where each component's release lives, and where its files sit inside the release zip
 COMPONENTS: dict[str, dict[str, str]] = {
     "orchestra": {
-        "repo": "Weaponised-Nerds/orchestra",
-        "zip_url": "https://github.com/Weaponised-Nerds/orchestra/archive/refs/tags/{tag}.zip",
+        # The source repo is private; releases are published to this public one
+        # (haos_image/publish_release.py), which the Marketplace can also read
+        "repo": "Weaponised-Nerds/orchestra-release",
+        "zip_url": "https://github.com/Weaponised-Nerds/orchestra-release/archive/refs/tags/{tag}.zip",
         "zip_dir": "custom_components/orchestra/",
     },
 }
 
 
-# The Marketplace keys its update entity on the GitHub repository id
-ORCHESTRA_REPOSITORY_ID = "1422859678"
+# The Marketplace keys its update entity on the GitHub repository id: that of the public
+# Weaponised-Nerds/orchestra-release. An entity for the private source repo (1422859678,
+# left over from HACS) can't update any more, so it doesn't count.
+ORCHESTRA_REPOSITORY_ID = "1458342129"
 MARKETPLACE_DOMAIN = "marketplace"
 
 

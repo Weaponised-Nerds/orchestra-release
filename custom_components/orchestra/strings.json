@@ -235,8 +235,24 @@
         "enabled": {
           "name": "Rhythms on",
           "description": "Map of rhythm to true or false."
+        },
+        "event_notifications": {
+          "name": "Event notifications",
+          "description": "Tell the household when a Conductor event starts, with what responds and why."
+        },
+        "incentive_program": {
+          "name": "Payment program",
+          "description": "The retailer program that pays for taking part, as the household knows it."
+        },
+        "incentive_aud_per_kwh": {
+          "name": "Payment per kWh",
+          "description": "What the program pays, in $ per kWh shifted or sent to the grid. 0 leaves money out of the notices."
         }
       }
+    },
+    "skip_event": {
+      "name": "Skip this event",
+      "description": "Runs the current Conductor event on the normal schedule. The next event applies as usual."
     }
   }
 }

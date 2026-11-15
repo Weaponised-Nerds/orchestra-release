@@ -559,6 +559,9 @@ async def async_setup_rhythms(hass: Any) -> RhythmEngine | None:
                 vol.Optional("notify_targets"): vol.All(cv.ensure_list, [cv.string]),
                 vol.Optional("weather_entity"): cv.string,
                 vol.Optional("enabled"): dict,
+                vol.Optional("event_notifications"): cv.boolean,
+                vol.Optional("incentive_program"): cv.string,
+                vol.Optional("incentive_aud_per_kwh"): vol.Coerce(float),
             }
         ),
     )
