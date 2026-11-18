@@ -16,6 +16,7 @@ quiet hours the notice goes to the Home Assistant notification list instead of a
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 from .const import DOMAIN
@@ -52,11 +53,51 @@ def equipment_from_automations(automations: list[Any], hass: Any) -> dict[str, l
         for entity_id in value if isinstance(value, list) else [value]:
             if not entity_id:
                 continue
-            state = hass.states.get(str(entity_id))
-            name = str(state.attributes.get("friendly_name") or entity_id) if state else str(entity_id)
+            name = friendly_name(hass, str(entity_id))
             if name not in out.setdefault(asset, []):
                 out[asset].append(name)
     return out
+
+
+def _readable_id(entity_id: str) -> str:
+    """climate.toy_room_2 -> Toy room: the last resort, never the raw entity id."""
+    obj = entity_id.split(".", 1)[-1]
+    obj = re.sub(r"_\d+$", "", obj).replace("_", " ").strip()
+    return obj[:1].upper() + obj[1:] if obj else entity_id
+
+
+def friendly_name(hass: Any, entity_id: str) -> str:
+    """The name the household knows: its state's name, else the entity registry's, else a tidy id.
+
+    Right after Home Assistant starts, an integration may not have added its entities yet,
+    so the state can be missing even though the device is known."""
+    state = hass.states.get(entity_id)
+    if state is not None and state.attributes.get("friendly_name"):
+        return str(state.attributes["friendly_name"])
+    try:
+        from homeassistant.helpers import device_registry as dr, entity_registry as er
+
+        entry = er.async_get(hass).async_get(entity_id)
+        if entry is not None:
+            name = entry.name or entry.original_name
+            device = dr.async_get(hass).async_get(entry.device_id) if entry.device_id else None
+            device_name = device and (device.name_by_user or device.name)
+            if entry.has_entity_name and device_name:
+                return f"{device_name} {name}" if name else str(device_name)
+            if name or device_name:
+                return str(name or device_name)
+    except Exception:  # outside Home Assistant, or a registry we can't read
+        pass
+    return _readable_id(entity_id)
+
+
+def _ha_started(hass: Any) -> bool:
+    """True once Home Assistant has finished starting (every integration has loaded)."""
+    try:
+        from homeassistant.core import CoreState
+    except ImportError:
+        return True
+    return getattr(hass, "state", CoreState.running) is CoreState.running
 
 
 class EventNotifier:
@@ -67,6 +108,7 @@ class EventNotifier:
         self.last_key: str | None = None
         self.sent: list[dict[str, Any]] = []
         self._unsubs: list[Any] = []
+        self._waiting_for_start = False
 
     def async_start(self) -> None:
         self._unsubs.append(self.coordinator.async_add_listener(self._on_update))
@@ -91,7 +133,21 @@ class EventNotifier:
             return
         if not self.engine.settings.get("event_notifications", True) or self.engine.skipped_today:
             return
+        if not _ha_started(self.hass):
+            # Conductor replays its latest frame the moment Orchestra connects, often before
+            # the A/C, EV and phone (companion app) integrations have loaded. Wait for Home
+            # Assistant to finish starting so the notice names the equipment and reaches phones.
+            if not self._waiting_for_start:
+                from homeassistant.helpers.start import async_at_started
+
+                self._waiting_for_start = True
+                self._unsubs.append(async_at_started(self.hass, self._async_started))
+            return
         self.hass.async_create_task(self.async_check())
+
+    async def _async_started(self, _hass: Any = None) -> None:
+        self._waiting_for_start = False
+        self._on_update()
 
     async def async_check(self) -> dict[str, Any] | None:
         """Send the notice for the current event if it hasn't been sent."""
@@ -158,7 +214,7 @@ class EventNotifier:
 
             persistent_notification.async_create(
                 self.hass,
-                notice.message + "\n\nSkip it with button.orchestra_skip_event on the Orchestra dashboard.",
+                notice.message + "\n\nTo skip it, press Skip this event on the Orchestra dashboard.",
                 title=notice.title,
                 notification_id=EVENT_TAG,
             )
