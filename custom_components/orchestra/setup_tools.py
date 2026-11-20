@@ -39,7 +39,7 @@ SETUP_PROMPT = (
     "the exact field names. Steps that need a sign-in on a vendor's website are parked for "
     "now: tell the person it uses the maker's cloud and leave it on the list. Never ask for, "
     "repeat or submit the person's own Home Assistant password: if the list says the home "
-    "has no owner login yet, point them to the 'Make this home yours' form in the Setup drawer. "
+    "has no owner login yet, point them to the 'Make this home yours' form in the Orchestra Assistant drawer. "
     "Before saying an integration isn't connected, check orchestra_list_integrations. "
     "Once devices are set up, organise the home: for the key energy equipment (solar, home "
     "batteries, EV chargers, air conditioning, heat pumps and hot water) and anything the person "

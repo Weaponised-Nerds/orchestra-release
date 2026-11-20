@@ -1,6 +1,6 @@
 // Orchestra setup assistant for the Home Assistant frontend (also inside the Companion app).
 //
-// Loaded on every page by the Orchestra integration. It adds a "Setup" tab on the right edge
+// Loaded on every page by the Orchestra integration. It adds an "Orchestra Assistant" tab on the right edge
 // that opens a chat drawer, and defines <orchestra-agent-panel> for the full-page sidebar
 // panel. Both talk to the agent over Home Assistant's own websocket (orchestra/agent/*), so
 // the chat runs as the signed-in person and needs no other login. Admins only.
@@ -88,7 +88,7 @@ class OrchestraAgentChat extends HTMLElement {
       <style>${STYLE}</style>
       <div class="chat">
         <header>
-          <h2>Setup assistant</h2>
+          <h2>Orchestra Assistant</h2>
           <button class="reset" title="Start a new conversation">New chat</button>
           ${closable ? '<button class="close" title="Close">Close</button>' : ""}
         </header>
@@ -295,7 +295,7 @@ class OrchestraAgentChat extends HTMLElement {
 }
 customElements.get("orchestra-agent-chat") || customElements.define("orchestra-agent-chat", OrchestraAgentChat);
 
-// Full-page sidebar panel ("Setup assistant")
+// Full-page sidebar panel ("Orchestra Assistant")
 class OrchestraAgentPanel extends HTMLElement {
   set hass(hass) {
     if (!this._chat) {
@@ -312,7 +312,7 @@ class OrchestraAgentPanel extends HTMLElement {
 }
 customElements.get("orchestra-agent-panel") || customElements.define("orchestra-agent-panel", OrchestraAgentPanel);
 
-// The "Setup" tab and drawer on every page
+// The "Orchestra Assistant" tab and drawer on every page
 (function addDrawer() {
   if (window.__orchestraAgentDrawer) return;
   window.__orchestraAgentDrawer = true;
@@ -341,7 +341,7 @@ customElements.get("orchestra-agent-panel") || customElements.define("orchestra-
         .drawer.open { transform: none; }
         orchestra-agent-chat { display: block; height: 100%; }
       </style>
-      <button class="tab" title="Orchestra setup assistant">Setup <span class="badge" hidden></span></button>
+      <button class="tab" title="Orchestra Assistant">Orchestra Assistant <span class="badge" hidden></span></button>
       <div class="drawer"><orchestra-agent-chat closable></orchestra-agent-chat></div>`;
     document.body.appendChild(host);
 

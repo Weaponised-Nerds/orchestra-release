@@ -2,7 +2,7 @@
 Orchestra setup assistant: a Claude agent that runs inside Home Assistant.
 
 The homeowner chats with it in the Orchestra drawer (on every HA page, including the
-Companion app) or the "Setup assistant" sidebar panel. Nothing else needs installing: the
+Companion app) or the "Orchestra Assistant" sidebar panel. Nothing else needs installing: the
 agent loop runs here, calls the Orchestra Setup tools (`setup_tools.py`) in-process, and
 sends the conversation to Conductor's relay, which holds the API key and the per-box limits.
 

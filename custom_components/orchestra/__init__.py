@@ -232,7 +232,7 @@ async def _async_start_chat_agent(hass: Any) -> None:
             hass,
             frontend_url_path=AGENT_PANEL_PATH,
             webcomponent_name="orchestra-agent-panel",
-            sidebar_title="Setup assistant",
+            sidebar_title="Orchestra Assistant",
             sidebar_icon="mdi:robot-happy-outline",
             module_url=module_url,
             require_admin=True,

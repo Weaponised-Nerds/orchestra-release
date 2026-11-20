@@ -81,6 +81,11 @@ PUNCH_WINDOW_FACINGS = "window_facings"
 USERNAME_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{2,31}$")
 MIN_PASSWORD_LENGTH = 8
 AGENT_SIGN_OUT_SECONDS = 3
+# The image's configuration.yaml signs home-network visitors in as the agent until the box is
+# claimed (written by orchestra/hijacker/bootstrap.py, which uses the same markers)
+AUTO_LOGIN_BEGIN = "# >>> orchestra auto-login (removed when the homeowner claims this box)"
+AUTO_LOGIN_END = "# <<< orchestra auto-login"
+AUTO_LOGIN_RESTART_SECONDS = 10
 NOTIFICATION_ID = "orchestra_setup"
 
 UpdateListener = Callable[[], None]
@@ -465,7 +470,7 @@ class OrchestraSetupAgent:
                 PunchItem(
                     PUNCH_NO_USERS,
                     "Create your own login",
-                    "Open the Setup tab and choose 'Make this home yours' to create your own "
+                    "Open the Orchestra Assistant tab and choose 'Make this home yours' to create your own "
                     "login. Until then this box still uses the shared Orchestra-Agent sign-in.",
                 ),
             )
@@ -482,7 +487,37 @@ class OrchestraSetupAgent:
             self.state["agent_password_rotated_at"] = time.time()
         await self._async_reissue_agent_token()
         await self.hass.async_add_executor_job(_remove_file, Path(self.hass.config.path("orchestra_agent_credentials.json")))
+        await self._async_end_auto_login()
         self.state["users_done"] = True
+
+    async def _async_end_auto_login(self) -> None:
+        """
+        Stop signing home-network visitors in as the agent: the box has a real owner now.
+
+        Removes the image's auto-login block from configuration.yaml for every later start,
+        and drops the running trusted-networks login so it ends straight away. If Home
+        Assistant's internals ever stop allowing that, it restarts instead.
+        """
+        path = Path(self.hass.config.path("configuration.yaml"))
+        try:
+            changed = await self.hass.async_add_executor_job(_strip_auto_login, path)
+        except OSError as err:
+            _LOGGER.warning("Orchestra could not turn off auto-login in configuration.yaml: %s", err)
+            return
+        if not changed:
+            return
+        self.state["auto_login_ended_at"] = time.time()
+        providers = getattr(self.hass.auth, "_providers", None)
+        if isinstance(providers, dict):
+            for key in [k for k, p in providers.items() if getattr(p, "type", None) == "trusted_networks"]:
+                providers.pop(key, None)
+            return
+        _LOGGER.info("Orchestra restarts Home Assistant to finish turning off auto-login")
+
+        async def _restart(_now: Any) -> None:
+            await self.hass.services.async_call("homeassistant", "restart")
+
+        async_call_later(self.hass, AUTO_LOGIN_RESTART_SECONDS, _restart)
 
     async def _async_reissue_agent_token(self) -> None:
         """Give the agent a new long-lived token and revoke the one every image shares."""
@@ -674,6 +709,29 @@ def _write_automations(path: Path, automations: list[Any]) -> None:
     import yaml
 
     path.write_text(yaml.safe_dump(automations, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def strip_auto_login(config_yaml: str) -> str:
+    """`configuration.yaml` text without the image's auto-login block (unchanged if absent)."""
+    start = config_yaml.find(AUTO_LOGIN_BEGIN)
+    end = config_yaml.find(AUTO_LOGIN_END)
+    if start == -1 or end < start:
+        return config_yaml
+    end += len(AUTO_LOGIN_END)
+    if config_yaml[end : end + 1] == "\n":
+        end += 1
+    return config_yaml[:start].rstrip("\n") + "\n" + config_yaml[end:]
+
+
+def _strip_auto_login(path: Path) -> bool:
+    if not path.exists():
+        return False
+    text = path.read_text(encoding="utf-8")
+    stripped = strip_auto_login(text)
+    if stripped == text:
+        return False
+    path.write_text(stripped, encoding="utf-8")
+    return True
 
 
 def _remove_file(path: Path) -> None:
