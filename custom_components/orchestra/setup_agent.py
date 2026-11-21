@@ -10,6 +10,7 @@ work from the first minute. Then, once Home Assistant's own discovery has settle
 2. confirms every discovered device that needs no input, and puts the rest on a punch list,
 3. sorts devices into rooms and labels them by kind of equipment,
 4. fills the Conductor asset blueprints with the matching entities,
+   then lays out the Orchestra dashboard from that equipment (dashboard_installer.py),
 5. retires the image's shared agent credentials: the Orchestra-Agent account gets a random
    password nobody knows, and a fresh long-lived token (written to
    `<config>/orchestra_agent_token.txt`) replaces the one baked into the image.
@@ -197,6 +198,7 @@ class OrchestraSetupAgent:
                 await asyncio.sleep(float(self.plan.get("entry_settle_seconds", 20)))
             report["organized"] = await self.async_organize_devices()
             report["automations"] = await self.async_prefill_automations()
+            report["dashboard"] = await self.async_build_dashboard()
             await self._async_drop_hacs_leftovers()
             if first:
                 await self._async_apply_theme()
@@ -331,6 +333,18 @@ class OrchestraSetupAgent:
         if self.hass.services.has_service("automation", "reload"):
             await self.hass.services.async_call("automation", "reload", blocking=True)
         return notes
+
+    async def async_build_dashboard(self) -> dict[str, Any]:
+        """Lay out the Orchestra dashboard from the equipment the blueprints now drive."""
+        from .dashboard_installer import async_build_dashboard
+
+        path = Path(self.hass.config.path("automations.yaml"))
+        automations = await self.hass.async_add_executor_job(_read_automations, path)
+        try:
+            return await async_build_dashboard(self.hass, automations)
+        except Exception as err:  # a dashboard is never worth failing setup over
+            _LOGGER.info("Orchestra could not build its dashboard: %s", err)
+            return {"error": str(err)}
 
     async def _async_drop_hacs_leftovers(self) -> None:
         """HACS is gone from Home Assistant 2026.11: the Marketplace replaced it.
@@ -674,6 +688,9 @@ class OrchestraSetupAgent:
         notes = report.get("automations") or []
         if notes:
             lines.append("Connected these to Conductor:\n" + "\n".join(f"- {n}" for n in notes))
+        dashboard = report.get("dashboard") or {}
+        if dashboard.get("url"):
+            lines.append(f"Your home's dashboard is ready: [Orchestra]({dashboard['url']}) in the sidebar.")
         users = report.get("users") or []
         if users:
             lines.append("Created logins: " + ", ".join(users) + ".")

@@ -58,6 +58,8 @@ SETUP_PROMPT = (
     "point the person to Settings > Updates. Installing an update needs a restart; ask before calling "
     "orchestra_restart_home_assistant and warn that this chat starts over afterwards. "
     "orchestra_apply_theme gives Home Assistant the Conductor look. "
+    "Once equipment is assigned, orchestra_build_dashboard lays out the Orchestra dashboard; run "
+    "it again after assigning more equipment. "
     "Add-ons (apps that run beside Home Assistant, such as Mosquitto or Zigbee2MQTT): "
     "orchestra_list_addons shows what is installed and searches the store; read an add-on's "
     "settings with orchestra_get_addon_settings before changing them with "
@@ -99,6 +101,7 @@ class OrchestraSetupAPI(llm.API):
                 InstallUpdateTool(),
                 RestartHomeAssistantTool(),
                 ApplyThemeTool(),
+                BuildDashboardTool(),
                 ListAddonsTool(),
                 GetAddonSettingsTool(),
                 SetAddonSettingsTool(),
@@ -572,6 +575,30 @@ class ApplyThemeTool(_AdminTool):
             return await async_install_theme(hass, apply=True)
         except Exception as err:
             return {"error": f"The theme couldn't be applied: {err}"}
+
+
+class BuildDashboardTool(_AdminTool):
+    name = "orchestra_build_dashboard"
+    description = (
+        "Make the Orchestra dashboard (sidebar: Orchestra) from the equipment assigned to the "
+        "Orchestra blueprints: today's Conductor signal and the household's choices, daily rhythms, "
+        "the equipment, Orchestra's automations and what they did, the market signal, and an Energy "
+        "view with the energy flow and solar, battery, home and car graphs. Fills the Energy "
+        "dashboard settings only when they are empty. If the person has edited the dashboard it is "
+        "left alone unless replace is true; ask before replacing their edits."
+    )
+    parameters = vol.Schema({vol.Optional("replace", default=False): bool})
+
+    async def _async_run(self, hass: HomeAssistant, args: dict[str, Any]) -> dict[str, Any]:
+        from .asset_assignments import automations_path
+        from .dashboard_installer import async_build_dashboard
+        from .setup_agent import _read_automations
+
+        automations = await hass.async_add_executor_job(_read_automations, automations_path(hass))
+        try:
+            return await async_build_dashboard(hass, automations, force=bool(args.get("replace")))
+        except Exception as err:
+            return {"error": f"The dashboard couldn't be made: {err}"}
 
 
 class _AddonTool(_AdminTool):
