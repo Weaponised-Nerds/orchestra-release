@@ -2,8 +2,8 @@
   "config": {
     "step": {
       "user": {
-        "title": "Orchestra",
-        "description": "Configure the Orchestra edge node and Conductor market broadcast receiver.",
+        "title": "Overture",
+        "description": "Configure the Overture edge node and Conductor market broadcast receiver.",
         "data": {
           "node_id": "Edge Node ID",
           "ngangk_api_url": "Ngangk Forecast API URL",
@@ -12,7 +12,7 @@
       }
     },
     "abort": {
-      "already_configured": "Orchestra is already configured on this Home Assistant instance."
+      "already_configured": "Overture is already configured on this Home Assistant instance."
     }
   },
   "entity": {
@@ -90,7 +90,7 @@
         },
         "offset_sensor": {
           "name": "Offset sensor",
-          "description": "The Orchestra setpoint offset sensor to follow."
+          "description": "The Overture setpoint offset sensor to follow."
         },
         "invert_shed_when_heating": {
           "name": "Shed downwards when heating",
@@ -120,7 +120,7 @@
         },
         "target_sensor": {
           "name": "Target sensor",
-          "description": "The Orchestra heat pump target sensor to follow."
+          "description": "The Overture heat pump target sensor to follow."
         },
         "boost_operation_mode": {
           "name": "Energy Soak operation mode",
@@ -150,7 +150,7 @@
     },
     "rhythm_step": {
       "name": "Run a rhythm step",
-      "description": "Called by the Orchestra rhythm blueprints at the start and end of each event on the Orchestra today calendar. Moves the devices and remembers them, so the end of the step puts back only what is still where Orchestra left it.",
+      "description": "Called by the Overture rhythm blueprints at the start and end of each event on the Overture today calendar. Moves the devices and remembers them, so the end of the step puts back only what is still where Overture left it.",
       "fields": {
         "rhythm": {
           "name": "Rhythm",

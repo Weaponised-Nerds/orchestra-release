@@ -1,5 +1,5 @@
 """
-Which of the home's equipment follows Conductor: the Orchestra blueprint automations.
+Which of the home's equipment follows Conductor: the Overture blueprint automations.
 
 The setup agent prefills these on first boot (`setup_planner.plan_asset_automations`).
 This module lets the setup assistant read them back and assign equipment the agent
@@ -11,6 +11,7 @@ still see and edit them under Settings → Automations.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import re
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +29,7 @@ from .blueprint_installer import (
 
 @dataclass(frozen=True)
 class AssetKind:
-    """One Orchestra blueprint, and the inputs the assistant may fill."""
+    """One Overture blueprint, and the inputs the assistant may fill."""
 
     blueprint: str
     title: str
@@ -145,12 +146,40 @@ class AssignmentError(Exception):
     """Why an assignment was refused, in words the assistant can pass on."""
 
 
+# Automations made before the Orchestra -> Overture rename carry the old name. Only the lines
+# Overture wrote are touched (its aliases and description), as text, so the rest of the file
+# keeps its formatting and comments.
+_OLD_ALIAS = re.compile(r"^(\s*(?:-\s+)?alias:\s*['\"]?)Orchestra(?=:| rhythm:)", re.MULTILINE)
+_OLD_DESCRIPTION = re.compile(
+    r"^(\s*(?:-\s+)?description:\s*['\"]?Assigned by the )Orchestra( setup assistant)", re.MULTILINE
+)
+
+
+def rebrand_automation_names(text: str) -> str:
+    """automations.yaml text with Overture's old 'Orchestra: ...' names renamed to 'Overture: ...'."""
+    text = _OLD_ALIAS.sub(r"\1Overture", text)
+    return _OLD_DESCRIPTION.sub(r"\1Overture\2", text)
+
+
+def rebrand_automations_file(path: Path) -> bool:
+    """Rename Overture's automations in place. True when the file changed."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    renamed = rebrand_automation_names(text)
+    if renamed == text:
+        return False
+    path.write_text(renamed, encoding="utf-8")
+    return True
+
+
 def automations_path(hass: Any) -> Path:
     return Path(hass.config.path("automations.yaml"))
 
 
 def describe_assignments(automations: list[Any]) -> list[dict[str, Any]]:
-    """The Orchestra blueprint automations in automations.yaml."""
+    """The Overture blueprint automations in automations.yaml."""
     out = []
     for automation in automations:
         if not isinstance(automation, dict):
@@ -242,10 +271,10 @@ def apply_assignment(
     updated.append(
         {
             "id": automation_id,
-            "alias": f"Orchestra: {kind.title.lower()} follows Conductor ({names})"
+            "alias": f"Overture: {kind.title.lower()} follows Conductor ({names})"
             if not kind.multiple
-            else (f"Orchestra rhythm: {kind.title.lower()}" if kind.rhythm else "Orchestra: air conditioning follows Conductor"),
-            "description": "Assigned by the Orchestra setup assistant.",
+            else (f"Overture rhythm: {kind.title.lower()}" if kind.rhythm else "Overture: air conditioning follows Conductor"),
+            "description": "Assigned by the Overture setup assistant.",
             "use_blueprint": {"path": path, "input": inputs},
         }
     )
@@ -259,7 +288,7 @@ def remove_assignment(automations: list[Any], automation_id: str) -> list[Any]:
         if not (isinstance(a, dict) and a.get("id") == automation_id and describe_assignments([a]))
     ]
     if len(kept) == len(automations):
-        raise AssignmentError("There is no Orchestra blueprint automation with that id.")
+        raise AssignmentError("There is no Overture blueprint automation with that id.")
     return kept
 
 

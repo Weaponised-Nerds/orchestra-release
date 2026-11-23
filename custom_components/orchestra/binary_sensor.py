@@ -1,4 +1,4 @@
-"""Platform for Orchestra binary sensor entities (Granular Asset Classes)."""
+"""Platform for Overture binary sensor entities (Granular Asset Classes)."""
 
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ async def async_setup_entry(
     entry: Any,
     async_add_entities: Any,
 ) -> None:
-    """Set up Orchestra binary sensors from a config entry."""
+    """Set up Overture binary sensors from a config entry."""
     coordinator: OrchestraDataUpdateCoordinator = hass.data[DOMAIN]["coordinator"]
     async_add_entities(
         [

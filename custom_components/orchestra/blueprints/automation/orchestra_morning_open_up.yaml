@@ -1,8 +1,8 @@
 blueprint:
-  name: Orchestra - Morning open-up
+  name: Overture - Morning open-up
   description: >-
     Opens the living area blinds and curtains at sunrise (not before the earliest time
-    set in Orchestra, 6 am by default) and the bedroom ones at the household's wake
+    set in Overture, 6 am by default) and the bedroom ones at the household's wake
     time (7 am by default). Blinds the heat shield is keeping shut stay shut. The times
     are on calendar.orchestra_today. Skip today and the rhythm's switch
     (switch.orchestra_rhythm_morning_open_up) pause it.
@@ -10,7 +10,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_morning_open_up.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_morning_open_up.yaml
   input:
     living_covers:
       name: Living area blinds and curtains
@@ -29,7 +29,7 @@ blueprint:
             - domain: cover
           multiple: true
     today_calendar:
-      name: Orchestra today calendar
+      name: Overture today calendar
       default: calendar.orchestra_today
       selector:
         entity:

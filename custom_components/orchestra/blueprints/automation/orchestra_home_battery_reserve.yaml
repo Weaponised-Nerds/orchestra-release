@@ -1,5 +1,5 @@
 blueprint:
-  name: Orchestra - Home battery reserve from Conductor
+  name: Overture - Home battery reserve from Conductor
   description: >-
     Holds a home battery's backup reserve and grid charging from the Conductor
     `home_battery` directive (`min_soc_reserve_pct`, `charge_from_grid`,
@@ -9,7 +9,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_home_battery_reserve.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_home_battery_reserve.yaml
   input:
     reserve_number:
       name: Backup reserve
@@ -35,7 +35,7 @@ blueprint:
           step: 1
           unit_of_measurement: "%"
     reserve_sensor:
-      name: Orchestra battery reserve sensor
+      name: Overture battery reserve sensor
       default: sensor.orchestra_home_battery_min_reserve
       selector:
         entity:

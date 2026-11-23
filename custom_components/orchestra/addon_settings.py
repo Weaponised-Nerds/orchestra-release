@@ -33,7 +33,7 @@ class AddonError(Exception):
 def _client(hass: HomeAssistant) -> Any:
     if "hassio" not in hass.config.components:
         raise AddonError(
-            "This Home Assistant has no add-ons: that needs Home Assistant OS, which the Orchestra image runs."
+            "This Home Assistant has no add-ons: that needs Home Assistant OS, which the Overture image runs."
         )
     from homeassistant.components.hassio.handler import get_supervisor_client
 

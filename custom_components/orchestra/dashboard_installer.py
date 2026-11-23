@@ -1,9 +1,9 @@
 """
-Builds the Orchestra dashboard in Home Assistant, from `dashboard_planner.py`'s plan.
+Builds the Overture dashboard in Home Assistant, from `dashboard_planner.py`'s plan.
 
 The setup agent calls this after filling the blueprints, on every pass, so equipment found
 late still makes it onto the dashboard. It stops rewriting the dashboard as soon as a
-person edits it: the hash of what Orchestra last saved is kept (`.storage/orchestra.dashboard`), and a dashboard that no
+person edits it: the hash of what Overture last saved is kept (`.storage/orchestra.dashboard`), and a dashboard that no
 longer matches it is theirs. `force` (the setup assistant's tool, when the person asks for
 a fresh one) rebuilds it anyway.
 
@@ -50,7 +50,7 @@ def config_hash(config: dict[str, Any]) -> str:
 
 
 def entity_infos(hass: HomeAssistant) -> list[EntityInfo]:
-    """Every entity outside Orchestra, as the planners see them."""
+    """Every entity outside Overture, as the planners see them."""
     ent_reg = er.async_get(hass)
     dev_reg = dr.async_get(hass)
     infos: list[EntityInfo] = []
@@ -144,7 +144,7 @@ async def async_fill_energy_prefs(hass: HomeAssistant, infos: list[EntityInfo], 
     try:
         manager = await async_get_manager(hass)
     except Exception as err:  # the energy integration isn't loaded
-        _LOGGER.debug("Orchestra could not read the energy settings: %s", err)
+        _LOGGER.debug("Overture could not read the energy settings: %s", err)
         return None
     current = manager.data or {}
     if current.get("energy_sources"):
@@ -156,7 +156,7 @@ async def async_fill_energy_prefs(hass: HomeAssistant, infos: list[EntityInfo], 
     if not sources:
         return current or None
     await manager.async_update({"energy_sources": sources})
-    _LOGGER.info("Orchestra filled the Energy dashboard settings: %s", [s.get("type") for s in sources])
+    _LOGGER.info("Overture filled the Energy dashboard settings: %s", [s.get("type") for s in sources])
     return manager.data
 
 
@@ -189,7 +189,7 @@ async def async_build_dashboard(
     force: bool = False,
 ) -> dict[str, Any]:
     """
-    Make (or refresh) the Orchestra dashboard. Returns {"url": ..., "hash": ...}, or
+    Make (or refresh) the Overture dashboard. Returns {"url": ..., "hash": ...}, or
     {"skipped": reason} when the person has made it their own.
     """
     store: Store = Store(hass, STORE_VERSION, STORE_KEY)
@@ -223,14 +223,14 @@ async def async_build_dashboard(
         )
         dashboard = _lovelace_dashboards(hass).get(DASHBOARD_URL_PATH)
         if dashboard is None:
-            raise DashboardError("The Orchestra dashboard couldn't be registered.")
+            raise DashboardError("The Overture dashboard couldn't be registered.")
     elif not force:
         try:
             saved = await dashboard.async_load(False)
         except Exception:  # never saved: no config yet
             saved = None
         if saved and config_hash(saved) != last_hash:
-            return {"skipped": "The Orchestra dashboard has been edited, so Orchestra leaves it alone.", "url": f"/{DASHBOARD_URL_PATH}"}
+            return {"skipped": "The Overture dashboard has been edited, so Overture leaves it alone.", "url": f"/{DASHBOARD_URL_PATH}"}
     await dashboard.async_save(config)
     await store.async_save({"hash": config_hash(config)})
     return {

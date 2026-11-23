@@ -1,4 +1,4 @@
-"""Platform for Orchestra select entities."""
+"""Platform for Overture select entities."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ async def async_setup_entry(
     entry: Any,
     async_add_entities: Any,
 ) -> None:
-    """Set up Orchestra select entities from a config entry."""
+    """Set up Overture select entities from a config entry."""
     coordinator: OrchestraDataUpdateCoordinator = hass.data[DOMAIN]["coordinator"]
     async_add_entities([OrchestraConductorDispatchModeSelect(coordinator)])
 

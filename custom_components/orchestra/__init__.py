@@ -8,7 +8,7 @@ Loaded automatically by `configuration.yaml` (`orchestra:`) or Config Flow.
    `Load Shed`) and publishes granular asset directives (EV charge now, Heat Pump
    run now, A/C pre-cool/pre-heat, Home battery storm watch).
 3. Subscribes to Conductor push events via outbound WebSocket client and local Webhook.
-4. On a fresh Orchestra image, runs the setup agent (`setup_agent.py`) that finishes
+4. On a fresh Overture image, runs the setup agent (`setup_agent.py`) that finishes
    setup after Home Assistant's own discovery and keeps a punch list for the rest.
 5. Enforces compressor dwell (10-min) and setpoint offset guardrails.
 6. Provides 1-tap customer opt-out with zero financial or contractual penalty.
@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from pathlib import Path
 from typing import Any
 
 try:
@@ -105,15 +106,40 @@ async def _async_install_blueprints(hass: Any) -> None:
     try:
         written = await hass.async_add_executor_job(install_blueprints, config_dir)
     except OSError as err:
-        _LOGGER.warning("Could not install Orchestra automation blueprints: %s", err)
+        _LOGGER.warning("Could not install Overture automation blueprints: %s", err)
         return
     if written:
-        _LOGGER.info("Installed Orchestra automation blueprints: %s", [p.name for p in written])
+        _LOGGER.info("Installed Overture automation blueprints: %s", [p.name for p in written])
+    await _async_rebrand_automations(hass, config_dir)
+
+
+async def _async_rebrand_automations(hass: Any, config_dir: str) -> None:
+    """Rename automations made before Orchestra became Overture, then reload them."""
+    try:
+        from .asset_assignments import rebrand_automations_file
+    except ImportError:
+        from custom_components.orchestra.asset_assignments import rebrand_automations_file
+    try:
+        changed = await hass.async_add_executor_job(
+            rebrand_automations_file, Path(config_dir) / "automations.yaml"
+        )
+    except OSError as err:
+        _LOGGER.warning("Could not rename Overture automations: %s", err)
+        return
+    if not changed:
+        return
+    _LOGGER.info("Renamed Overture's automations from their old Orchestra names")
+    services = getattr(hass, "services", None)
+    if services is not None and services.has_service("automation", "reload"):
+        try:
+            await services.async_call("automation", "reload", blocking=False)
+        except Exception as err:  # noqa: BLE001 - a failed reload only delays the new names
+            _LOGGER.debug("Automation reload after rename failed: %s", err)
 
 
 async def async_setup(hass: Any, config: dict[str, Any]) -> bool:
     """
-    Initialize the Orchestra hijack integration inside the Home Assistant Core event loop.
+    Initialize the Overture hijack integration inside the Home Assistant Core event loop.
     Works both inside a real `homeassistant.core.HomeAssistant` runtime and in
     lightweight mock `hass` test harnesses.
     """
@@ -177,7 +203,7 @@ async def async_setup(hass: Any, config: dict[str, Any]) -> bool:
 
 
 async def _async_start_setup_agent(hass: Any) -> None:
-    """Start the setup agent where the Orchestra image left a setup plan."""
+    """Start the setup agent where the Overture image left a setup plan."""
     if "setup_agent" in hass.data.get(DOMAIN, {}) or not hasattr(hass, "auth"):
         return
     try:
@@ -191,7 +217,7 @@ async def _async_start_setup_agent(hass: Any) -> None:
 
 
 def _async_register_setup_tools(hass: Any) -> None:
-    """Offer the Orchestra Setup tools to Home Assistant's MCP Server (once per run)."""
+    """Offer the Overture Setup tools to Home Assistant's MCP Server (once per run)."""
     if "setup_tools_unregister" in hass.data.get(DOMAIN, {}) or not hasattr(hass, "auth"):
         return
     try:
@@ -201,7 +227,7 @@ def _async_register_setup_tools(hass: Any) -> None:
     try:
         hass.data.setdefault(DOMAIN, {})["setup_tools_unregister"] = async_register_setup_tools(hass)
     except Exception as err:  # Home Assistant before the LLM API helpers
-        _LOGGER.debug("Orchestra Setup tools not registered: %s", err)
+        _LOGGER.debug("Overture Setup tools not registered: %s", err)
 
 
 AGENT_JS_URL = "/orchestra_static/orchestra-agent.js"
@@ -232,13 +258,13 @@ async def _async_start_chat_agent(hass: Any) -> None:
             hass,
             frontend_url_path=AGENT_PANEL_PATH,
             webcomponent_name="orchestra-agent-panel",
-            sidebar_title="Orchestra Assistant",
+            sidebar_title="Overture Assistant",
             sidebar_icon="mdi:robot-happy-outline",
             module_url=module_url,
             require_admin=True,
         )
-    except Exception as err:  # the rest of Orchestra keeps working without the assistant
-        _LOGGER.warning("Orchestra setup assistant not started: %s", err)
+    except Exception as err:  # the rest of Overture keeps working without the assistant
+        _LOGGER.warning("Overture setup assistant not started: %s", err)
 
 
 async def _async_restore_theme(hass: Any) -> None:
@@ -267,11 +293,11 @@ async def _async_start_rhythms(hass: Any) -> None:
 
         await async_setup_event_notifier(hass)
     except Exception as err:  # Conductor control keeps working without rhythms
-        _LOGGER.warning("Orchestra rhythms not started: %s", err)
+        _LOGGER.warning("Overture rhythms not started: %s", err)
 
 
 async def async_setup_entry(hass: Any, entry: Any) -> bool:
-    """Set up Orchestra from a Home Assistant ConfigEntry."""
+    """Set up Overture from a Home Assistant ConfigEntry."""
     hass.data.setdefault(DOMAIN, {})
 
     entry_data = getattr(entry, "data", {}) if not isinstance(entry, dict) else entry
@@ -330,7 +356,7 @@ async def async_setup_entry(hass: Any, entry: Any) -> bool:
 
 
 async def async_unload_entry(hass: Any, entry: Any) -> bool:
-    """Unload an Orchestra config entry."""
+    """Unload an Overture config entry."""
     if DOMAIN in hass.data:
         coordinator = hass.data[DOMAIN].get("coordinator")
         if coordinator:

@@ -1,8 +1,8 @@
 blueprint:
-  name: Orchestra - Heat shield
+  name: Overture - Heat shield
   description: >-
     On hot days, shuts the blinds and curtains on each side of the house while the sun
-    is on that side, then opens the ones that are still shut. Orchestra plans the times
+    is on that side, then opens the ones that are still shut. Overture plans the times
     each morning from the sun's path and the forecast, and shows them on
     calendar.orchestra_today. Works with or without Conductor.
 
@@ -18,7 +18,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_shield.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_shield.yaml
   input:
     east_covers:
       name: East-facing blinds and curtains
@@ -62,7 +62,7 @@ blueprint:
             - domain: cover
           multiple: true
     today_calendar:
-      name: Orchestra today calendar
+      name: Overture today calendar
       default: calendar.orchestra_today
       selector:
         entity:
@@ -70,7 +70,7 @@ blueprint:
             - integration: orchestra
               domain: calendar
     precool_sensor:
-      name: Orchestra A/C pre-cool sensor
+      name: Overture A/C pre-cool sensor
       default: binary_sensor.orchestra_ac_precool
       selector:
         entity:

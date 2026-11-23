@@ -1,11 +1,11 @@
 """
-Keeps Orchestra up to date when nothing else does.
+Keeps Overture up to date when nothing else does.
 
 From Home Assistant 2026.11 the built-in Marketplace (which replaced HACS) updates
-community integrations. An image or starter backup puts Orchestra in custom_components
+community integrations. An image or starter backup puts Overture in custom_components
 directly, so the Marketplace doesn't know about it until someone adds it there. Until
-then Orchestra fetches its own public release zip from GitHub, checks it, and swaps it
-into custom_components. Once the Marketplace tracks Orchestra, Orchestra stands down so
+then Overture fetches its own public release zip from GitHub, checks it, and swaps it
+into custom_components. Once the Marketplace tracks Overture, Overture stands down so
 the two never fight over the same folder. New files only take effect on a restart, which
 the setup assistant asks the person about first.
 """
@@ -37,17 +37,18 @@ COMPONENTS: dict[str, dict[str, str]] = {
     "orchestra": {
         # The source repo is private; releases are published to this public one
         # (haos_image/publish_release.py), which the Marketplace can also read
-        "repo": "Weaponised-Nerds/orchestra-release",
-        "zip_url": "https://github.com/Weaponised-Nerds/orchestra-release/archive/refs/tags/{tag}.zip",
+        "repo": "Weaponised-Nerds/overture",
+        "zip_url": "https://github.com/Weaponised-Nerds/overture/archive/refs/tags/{tag}.zip",
         "zip_dir": "custom_components/orchestra/",
     },
 }
 
 
 # The Marketplace keys its update entity on the GitHub repository id: that of the public
-# Weaponised-Nerds/orchestra-release. An entity for the private source repo (1422859678,
-# left over from HACS) can't update any more, so it doesn't count.
-ORCHESTRA_REPOSITORY_ID = "1458342129"
+# Weaponised-Nerds/overture. Entities for the private source repo (1422859678, left over
+# from HACS) and for the retired Weaponised-Nerds/orchestra-release (1458342129, used up to
+# 0.7.x) never see a new release, so they don't count.
+ORCHESTRA_REPOSITORY_ID = "1468630872"
 MARKETPLACE_DOMAIN = "marketplace"
 
 
@@ -78,7 +79,7 @@ def marketplace_entity_id(hass: HomeAssistant, name: str) -> str | None:
 
 async def async_check(hass: HomeAssistant, name: str) -> dict[str, Any]:
     if name not in COMPONENTS:
-        raise UpdateError(f"Orchestra can only update {', '.join(COMPONENTS)}.")
+        raise UpdateError(f"Overture can only update {', '.join(COMPONENTS)}.")
     if entity_id := marketplace_entity_id(hass, name):
         installed = await hass.async_add_executor_job(installed_version, hass, name)
         return {
@@ -114,10 +115,10 @@ async def async_check(hass: HomeAssistant, name: str) -> dict[str, Any]:
 async def async_install(hass: HomeAssistant, name: str, tag: str | None = None) -> dict[str, Any]:
     """Download and install a release. Returns whether a restart is needed."""
     if name not in COMPONENTS:
-        raise UpdateError(f"Orchestra can only update {', '.join(COMPONENTS)}.")
+        raise UpdateError(f"Overture can only update {', '.join(COMPONENTS)}.")
     if marketplace_entity_id(hass, name):
         # Swapping files under the Marketplace would leave it with the wrong version on record
-        raise UpdateError("The Marketplace keeps Orchestra up to date. Update it from Settings > Updates.")
+        raise UpdateError("The Marketplace keeps Overture up to date. Update it from Settings > Updates.")
     if tag is None:
         tag = (await async_check(hass, name))["latest"]
     spec = COMPONENTS[name]
@@ -133,7 +134,7 @@ async def async_install(hass: HomeAssistant, name: str, tag: str | None = None) 
         raise UpdateError("That download is too big to be a real release.")
     target = Path(hass.config.path("custom_components", name))
     version = await hass.async_add_executor_job(_swap_in, data, spec["zip_dir"], name, target)
-    _LOGGER.info("Orchestra installed %s %s", name, version)
+    _LOGGER.info("Overture installed %s %s", name, version)
     return {"component": name, "installed": version, "restart_needed": is_running(hass, name)}
 
 

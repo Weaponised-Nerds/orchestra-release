@@ -22,7 +22,7 @@ class OrchestraTodayCalendar(RhythmEntity, CalendarEntity):
 
     def __init__(self, engine: Any) -> None:
         super().__init__(engine, "today_calendar", "calendar.orchestra_today")
-        self._attr_name = "Orchestra today"
+        self._attr_name = "Overture today"
         self._attr_icon = "mdi:calendar-clock"
 
     def _events(self) -> list[CalendarEvent]:

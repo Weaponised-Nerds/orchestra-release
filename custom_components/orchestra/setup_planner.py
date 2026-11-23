@@ -1,5 +1,5 @@
 """
-Decisions the Orchestra setup agent makes about a freshly discovered home.
+Decisions the Overture setup agent makes about a freshly discovered home.
 
 Kept free of Home Assistant imports so the rules can be tested on their own:
 - which discovery flows can be confirmed without a person, and what to ask for when not,
@@ -307,7 +307,7 @@ def _automation(automation_id: str, alias: str, blueprint: str, inputs: dict[str
     return {
         "id": automation_id,
         "alias": alias,
-        "description": "Set up by the Orchestra setup agent. Check the entities it picked.",
+        "description": "Set up by the Overture setup agent. Check the entities it picked.",
         "use_blueprint": {"path": blueprint_path(blueprint), "input": inputs},
     }
 
@@ -407,7 +407,7 @@ def plan_asset_automations(
         add(
             _automation(
                 f"orchestra_heat_pump_{_object_id(heater.entity_id)}",
-                f"Orchestra: {heater.name or heater.entity_id} follows Conductor",
+                f"Overture: {heater.name or heater.entity_id} follows Conductor",
                 BLUEPRINT_HEAT_PUMP_TARGET,
                 inputs,
             ),
@@ -424,7 +424,7 @@ def plan_asset_automations(
         add(
             _automation(
                 "orchestra_hvac_offset",
-                "Orchestra: air conditioning follows Conductor",
+                "Overture: air conditioning follows Conductor",
                 BLUEPRINT_HVAC_SETPOINT_OFFSET,
                 {"climate_entity": ids},
             ),
@@ -452,7 +452,7 @@ def plan_asset_automations(
         add(
             _automation(
                 f"orchestra_ev_rate_{_object_id(e.entity_id)}",
-                f"Orchestra: {e.device_name or e.name or e.entity_id} follows Conductor",
+                f"Overture: {e.device_name or e.name or e.entity_id} follows Conductor",
                 BLUEPRINT_EV_CHARGE_RATE,
                 inputs,
             ),
@@ -468,7 +468,7 @@ def plan_asset_automations(
         add(
             _automation(
                 f"orchestra_battery_reserve_{_object_id(e.entity_id)}",
-                f"Orchestra: {e.device_name or e.name or e.entity_id} follows Conductor",
+                f"Overture: {e.device_name or e.name or e.entity_id} follows Conductor",
                 BLUEPRINT_HOME_BATTERY_RESERVE,
                 {"reserve_number": e.entity_id},
             ),
@@ -488,7 +488,7 @@ def plan_asset_automations(
         add(
             _automation(
                 "orchestra_rhythm_heat_shield",
-                "Orchestra rhythm: heat shield",
+                "Overture rhythm: heat shield",
                 BLUEPRINT_HEAT_SHIELD,
                 {"unknown_covers": ids},
             ),
@@ -500,7 +500,7 @@ def plan_asset_automations(
         add(
             _automation(
                 "orchestra_rhythm_morning_open_up",
-                "Orchestra rhythm: morning open-up",
+                "Overture rhythm: morning open-up",
                 BLUEPRINT_MORNING_OPEN_UP,
                 {"living_covers": living, "bedroom_covers": bedrooms},
             ),
@@ -517,7 +517,7 @@ def plan_asset_automations(
         add(
             _automation(
                 "orchestra_rhythm_peak_quiet",
-                "Orchestra rhythm: peak quiet",
+                "Overture rhythm: peak quiet",
                 BLUEPRINT_PEAK_QUIET,
                 {"loads": loads},
             ),

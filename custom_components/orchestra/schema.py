@@ -2,7 +2,7 @@
 The schema library Home Assistant uses.
 
 Home Assistant 2026.10 replaced voluptuous with probatio (the same API), and stopped
-shipping voluptuous, voluptuous_openapi and voluptuous_serialize. Orchestra imports `vol`
+shipping voluptuous, voluptuous_openapi and voluptuous_serialize. Overture imports `vol`
 from here so it runs on both. Raises ImportError outside Home Assistant, like the
 direct imports it replaces.
 """

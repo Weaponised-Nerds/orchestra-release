@@ -1,5 +1,5 @@
 """
-Orchestra DataUpdateCoordinator & Conductor Dispatch Engine.
+Overture DataUpdateCoordinator & Conductor Dispatch Engine.
 
 Fetches 30-minute SWIS trading interval forecasts from the Ngangk API
 (https://ngangk.deeben.workers.dev/api/ngangk/forecast), tracks WEM operational demand,
@@ -154,7 +154,7 @@ class OrchestraDispatchState:
 
 @dataclass
 class OrchestraCoordinatorData:
-    """Combined payload held by the Orchestra coordinator."""
+    """Combined payload held by the Overture coordinator."""
 
     market: OrchestraMarketData = field(default_factory=OrchestraMarketData)
     dispatch: OrchestraDispatchState = field(default_factory=OrchestraDispatchState)
@@ -208,7 +208,7 @@ class OrchestraDataUpdateCoordinator:
         try:
             return float(self.comfort_hook(offset, self.data.dispatch))
         except Exception as err:  # comfort is a refinement; never lose the directive over it
-            _LOGGER.warning("Orchestra comfort limit not applied: %s", err)
+            _LOGGER.warning("Overture comfort limit not applied: %s", err)
             return offset
 
     def async_add_listener(
@@ -257,7 +257,7 @@ class OrchestraDataUpdateCoordinator:
             try:
                 callback()
             except Exception as err:
-                _LOGGER.error("Error invoking Orchestra coordinator listener: %s", err)
+                _LOGGER.error("Error invoking Overture coordinator listener: %s", err)
 
     async def async_start(self) -> None:
         """Start the background Ngangk forecast polling loop."""
@@ -288,7 +288,7 @@ class OrchestraDataUpdateCoordinator:
             except asyncio.CancelledError:
                 break
             except Exception as err:
-                _LOGGER.warning("Error in Orchestra polling loop: %s", err)
+                _LOGGER.warning("Error in Overture polling loop: %s", err)
                 await asyncio.sleep(30)
 
     async def async_refresh(self) -> None:
@@ -324,7 +324,7 @@ class OrchestraDataUpdateCoordinator:
                 try:
                     req = urllib.request.Request(
                         url,
-                        headers={"User-Agent": "Orchestra-HA-Plugin/1.0", "Accept": "application/json"},
+                        headers={"User-Agent": "Overture-HA-Plugin/1.0", "Accept": "application/json"},
                     )
                     with urllib.request.urlopen(req, timeout=5.0) as resp:
                         return json.loads(resp.read().decode("utf-8"))

@@ -1,9 +1,5 @@
-# Orchestra for Home Assistant
+# This repository has moved
 
-Orchestra connects a home's air conditioning, heat pumps, hot water, EV chargers and
-batteries to Conductor, and helps set up a new Home Assistant.
-
-This repository only holds released builds. Install it from **Settings > Marketplace >
-Add from link** with `Weaponised-Nerds/orchestra-release`, or let Orchestra keep itself up to date.
-
-Current version: **0.7.0**
+Orchestra is now **Overture**, released from [Weaponised-Nerds/overture](https://github.com/Weaponised-Nerds/overture).
+Installs that update from here receive one last build (0.8.0) that switches them over.
+In **Settings > Marketplace**, remove this repository and add `Weaponised-Nerds/overture` instead.

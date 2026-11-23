@@ -1,10 +1,10 @@
 """
-Heat pump control held by the Orchestra integration (`orchestra.apply_heat_pump`).
+Heat pump control held by the Overture integration (`orchestra.apply_heat_pump`).
 
 The heat pump blueprint calls this whenever the heat pump directive changes. Energy
 Soak switches the heat pump on (and, for a water heater, sets the soak target), Load
 Shed switches it off, and back on Normal it returns to exactly what it was doing
-before: on or off, and its previous temperature and operation mode. Orchestra
+before: on or off, and its previous temperature and operation mode. Overture
 remembers that starting state, so repeated calls during one event never overwrite it.
 
 Works with water heaters, climate entities and plain switches (e.g. a pool heat pump).
@@ -187,7 +187,7 @@ class HeatPumpController:
             return result
         if phase == "soak" and domain in ("water_heater", "climate"):
             result["temperature"] = clamp_temperature(soak_temperature, state.attributes)
-        _LOGGER.info("Orchestra heat pump %s: %s", entity_id, result)
+        _LOGGER.info("Overture heat pump %s: %s", entity_id, result)
         try:
             if phase == "soak":
                 result.update(await self._async_soak(entity_id, domain, soak_temperature, call, setpoint_only))
@@ -196,7 +196,7 @@ class HeatPumpController:
             else:
                 await self._async_restore(entity_id, domain, apply, call, setpoint_only)
         except Exception as err:  # noqa: BLE001 - one unit failing mustn't stop the rest
-            _LOGGER.warning("Orchestra heat pump %s: %s failed: %s", entity_id, reason, err)
+            _LOGGER.warning("Overture heat pump %s: %s failed: %s", entity_id, reason, err)
             result["error"] = str(err)
         return result
 

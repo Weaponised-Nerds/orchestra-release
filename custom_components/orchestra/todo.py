@@ -1,4 +1,4 @@
-"""The Orchestra setup punch list: things the setup agent could not do without a person."""
+"""The Overture setup punch list: things the setup agent could not do without a person."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from .setup_agent import OrchestraSetupAgent
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: Any, async_add_entities: Any) -> None:
-    """Add the punch list on installs the Orchestra image set up."""
+    """Add the punch list on installs the Overture image set up."""
     agent: OrchestraSetupAgent | None = hass.data.get(DOMAIN, {}).get("setup_agent")
     if agent is not None:
         async_add_entities([OrchestraPunchList(agent)])
@@ -35,7 +35,7 @@ class OrchestraPunchList(TodoListEntity):
 
     def __init__(self, agent: OrchestraSetupAgent) -> None:
         self._agent = agent
-        self._attr_name = "Orchestra setup"
+        self._attr_name = "Overture setup"
         self.entity_id = "todo.orchestra_setup"
 
     async def async_added_to_hass(self) -> None:

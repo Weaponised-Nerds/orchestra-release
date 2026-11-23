@@ -3,7 +3,7 @@ Daily rhythms: the pure planning half (no Home Assistant imports, so it is unit 
 
 A rhythm is a small daily routine that is worth having with or without Conductor:
 blinds that keep the sun out on hot days, blinds that open in the morning, heavy loads
-held off during the evening peak. Each morning Orchestra plans the day's rhythm events
+held off during the evening peak. Each morning Overture plans the day's rhythm events
 from the sun's path and the local forecast, and publishes them on `calendar.orchestra_today`.
 The rhythm blueprints trigger on those events and call `orchestra.rhythm_step`.
 
@@ -334,7 +334,7 @@ def plan_hold(state: str | None, *, want: str) -> str:
 
 def plan_release(state: str | None, *, set_to: str) -> str:
     """
-    At the end of a step: "restore" a device still where Orchestra put it, "drop" one
+    At the end of a step: "restore" a device still where Overture put it, "drop" one
     the household has changed since (their change wins).
     """
     if state is None or state in ("unavailable", "unknown"):

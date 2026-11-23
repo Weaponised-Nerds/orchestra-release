@@ -2,7 +2,7 @@
 Tells the household when a Conductor event starts: what responds, why, and how to skip it.
 
 The notifier watches the coordinator. When a Load Shed or Energy Soak event starts and
-some of the home's own equipment (the Orchestra blueprint automations) responds, it sends
+some of the home's own equipment (the Overture blueprint automations) responds, it sends
 one notification to the companion apps with:
 - a line per responding piece of equipment, by its own name;
 - the benefit, from the live market and any known payment (`event_messages.py`);
@@ -134,7 +134,7 @@ class EventNotifier:
         if not self.engine.settings.get("event_notifications", True) or self.engine.skipped_today:
             return
         if not _ha_started(self.hass):
-            # Conductor replays its latest frame the moment Orchestra connects, often before
+            # Conductor replays its latest frame the moment Overture connects, often before
             # the A/C, EV and phone (companion app) integrations have loaded. Wait for Home
             # Assistant to finish starting so the notice names the equipment and reaches phones.
             if not self._waiting_for_start:
@@ -208,13 +208,13 @@ class EventNotifier:
                     blocking=True,
                 )
             except Exception as err:
-                _LOGGER.warning("Orchestra event notice not sent to notify.%s: %s", service, err)
+                _LOGGER.warning("Overture event notice not sent to notify.%s: %s", service, err)
         if not targets:
             from homeassistant.components import persistent_notification
 
             persistent_notification.async_create(
                 self.hass,
-                notice.message + "\n\nTo skip it, press Skip this event on the Orchestra dashboard.",
+                notice.message + "\n\nTo skip it, press Skip this event on the Overture dashboard.",
                 title=notice.title,
                 notification_id=EVENT_TAG,
             )

@@ -1,4 +1,4 @@
-"""Platform for Orchestra sensor entities."""
+"""Platform for Overture sensor entities."""
 
 from __future__ import annotations
 
@@ -67,11 +67,11 @@ async def async_setup_entry(
     entry: Any,
     async_add_entities: Any,
 ) -> None:
-    """Set up Orchestra sensors from a config entry."""
+    """Set up Overture sensors from a config entry."""
     coordinator: OrchestraDataUpdateCoordinator = hass.data[DOMAIN]["coordinator"]
     async_add_entities(
         [
-            # 1. Canonical Orchestra Sensors (sensor.orchestra_*)
+            # 1. Canonical Overture Sensors (sensor.orchestra_*)
             OrchestraWEMOperationalDemandSensor(coordinator),
             OrchestraWEMWholesalePriceSensor(coordinator),
             OrchestraWEMRenewableAvailabilitySensor(coordinator),
@@ -80,7 +80,7 @@ async def async_setup_entry(
             OrchestraCounterfactualShedSensor(coordinator),
             OrchestraAccumulatedDividendSensor(coordinator),
 
-            # Per-asset directive sensors driving the Orchestra automation blueprints
+            # Per-asset directive sensors driving the Overture automation blueprints
             OrchestraHVACSetpointOffsetSensor(coordinator),
             OrchestraEVTargetAmpsSensor(coordinator),
             OrchestraHeatPumpTargetTempSensor(coordinator),
@@ -342,7 +342,7 @@ class OrchestraHVACSetpointOffsetSensor(_OrchestraAssetDirectiveSensor, RestoreE
     Setpoint drift (°C) to add to each A/C's own setpoint; 0 means no override.
 
     The HVAC blueprint moves setpoints by the change between consecutive states, so
-    after a restart this reports the last offset until Orchestra's first update.
+    after a restart this reports the last offset until Overture's first update.
     Otherwise a still-active drift would read as 0 -> offset and be applied twice.
     """
 

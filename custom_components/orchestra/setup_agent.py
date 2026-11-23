@@ -1,5 +1,5 @@
 """
-Orchestra setup agent: finishes a fresh Orchestra image's setup inside Home Assistant.
+Overture setup agent: finishes a fresh Overture image's setup inside Home Assistant.
 
 It only runs where the image left a setup plan (`.storage/orchestra.setup_plan`), so a
 normal Marketplace (or HACS) install never has flows confirmed, devices moved or passwords changed.
@@ -10,7 +10,7 @@ work from the first minute. Then, once Home Assistant's own discovery has settle
 2. confirms every discovered device that needs no input, and puts the rest on a punch list,
 3. sorts devices into rooms and labels them by kind of equipment,
 4. fills the Conductor asset blueprints with the matching entities,
-   then lays out the Orchestra dashboard from that equipment (dashboard_installer.py),
+   then lays out the Overture dashboard from that equipment (dashboard_installer.py),
 5. retires the image's shared agent credentials: the Orchestra-Agent account gets a random
    password nobody knows, and a fresh long-lived token (written to
    `<config>/orchestra_agent_token.txt`) replaces the one baked into the image.
@@ -223,7 +223,7 @@ class OrchestraSetupAgent:
                 await self.hass.config_entries.flow.async_init(domain, context={"source": "onboarding"})
                 started.append(domain)
             except Exception as err:  # an onboarding extra must never stop setup
-                _LOGGER.debug("Orchestra could not set up %s: %s", domain, err)
+                _LOGGER.debug("Overture could not set up %s: %s", domain, err)
         return started
 
     async def async_resolve_discovery_flows(self) -> dict[str, list[str]]:
@@ -259,7 +259,7 @@ class OrchestraSetupAgent:
                     return "skipped"
                 step = await flow_mgr.async_configure(flow_id, decision.user_input)
         except Exception as err:  # unknown flow ids, validation errors, flaky devices
-            _LOGGER.info("Orchestra left %s for later: %s", flow.get("handler"), err)
+            _LOGGER.info("Overture left %s for later: %s", flow.get("handler"), err)
             return "skipped"
         return "skipped"
 
@@ -321,9 +321,9 @@ class OrchestraSetupAgent:
             self._add_punch(
                 PunchItem(
                     PUNCH_WINDOW_FACINGS,
-                    "Tell Orchestra which way each window faces",
+                    "Tell Overture which way each window faces",
                     "On hot days the heat shield shuts the blinds on whichever side of the house "
-                    "the sun is on. Until Orchestra knows which way each blind faces, it only "
+                    "the sun is on. Until Overture knows which way each blind faces, it only "
                     "shuts them while Conductor pre-cools. The setup assistant can ask you, room "
                     "by room, and sort them into north, east, south and west.",
                 )
@@ -335,7 +335,7 @@ class OrchestraSetupAgent:
         return notes
 
     async def async_build_dashboard(self) -> dict[str, Any]:
-        """Lay out the Orchestra dashboard from the equipment the blueprints now drive."""
+        """Lay out the Overture dashboard from the equipment the blueprints now drive."""
         from .dashboard_installer import async_build_dashboard
 
         path = Path(self.hass.config.path("automations.yaml"))
@@ -343,7 +343,7 @@ class OrchestraSetupAgent:
         try:
             return await async_build_dashboard(self.hass, automations)
         except Exception as err:  # a dashboard is never worth failing setup over
-            _LOGGER.info("Orchestra could not build its dashboard: %s", err)
+            _LOGGER.info("Overture could not build its dashboard: %s", err)
             return {"error": str(err)}
 
     async def _async_drop_hacs_leftovers(self) -> None:
@@ -366,7 +366,7 @@ class OrchestraSetupAgent:
         try:
             await async_install_theme(self.hass, apply=True)
         except Exception as err:  # a theme is never worth failing setup over
-            _LOGGER.info("Orchestra could not apply the Conductor theme: %s", err)
+            _LOGGER.info("Overture could not apply the Conductor theme: %s", err)
         self.state["theme_applied"] = True
 
     async def async_setup_users(self) -> list[str]:
@@ -392,7 +392,7 @@ class OrchestraSetupAgent:
                     provider, spec.get("name") or username, username, str(spec["password"]), spec.get("admin", True)
                 )
             except Exception as err:  # most often: the username already exists
-                _LOGGER.info("Orchestra did not add login %s: %s", username, err)
+                _LOGGER.info("Overture did not add login %s: %s", username, err)
                 continue
             created.append(username)
 
@@ -443,7 +443,7 @@ class OrchestraSetupAgent:
             try:
                 await self._async_add_login(provider, name, username, password, admin=True)
             except Exception as err:
-                _LOGGER.info("Orchestra could not add login %s: %s", username, err)
+                _LOGGER.info("Overture could not add login %s: %s", username, err)
                 raise ClaimError("That username is taken. Choose another one.") from err
             self.state["logins_created"] = [username]
             self.state["claimed_at"] = time.time()
@@ -484,7 +484,7 @@ class OrchestraSetupAgent:
                 PunchItem(
                     PUNCH_NO_USERS,
                     "Create your own login",
-                    "Open the Orchestra Assistant tab and choose 'Make this home yours' to create your own "
+                    "Open the Overture Assistant tab and choose 'Make this home yours' to create your own "
                     "login. Until then this box still uses the shared Orchestra-Agent sign-in.",
                 ),
             )
@@ -496,7 +496,7 @@ class OrchestraSetupAgent:
         try:
             await provider.async_change_password(AGENT_USERNAME, secrets.token_urlsafe(32))
         except Exception as err:
-            _LOGGER.warning("Orchestra could not change the agent password: %s", err)
+            _LOGGER.warning("Overture could not change the agent password: %s", err)
         else:
             self.state["agent_password_rotated_at"] = time.time()
         await self._async_reissue_agent_token()
@@ -516,7 +516,7 @@ class OrchestraSetupAgent:
         try:
             changed = await self.hass.async_add_executor_job(_strip_auto_login, path)
         except OSError as err:
-            _LOGGER.warning("Orchestra could not turn off auto-login in configuration.yaml: %s", err)
+            _LOGGER.warning("Overture could not turn off auto-login in configuration.yaml: %s", err)
             return
         if not changed:
             return
@@ -526,7 +526,7 @@ class OrchestraSetupAgent:
             for key in [k for k, p in providers.items() if getattr(p, "type", None) == "trusted_networks"]:
                 providers.pop(key, None)
             return
-        _LOGGER.info("Orchestra restarts Home Assistant to finish turning off auto-login")
+        _LOGGER.info("Overture restarts Home Assistant to finish turning off auto-login")
 
         async def _restart(_now: Any) -> None:
             await self.hass.services.async_call("homeassistant", "restart")
@@ -539,12 +539,12 @@ class OrchestraSetupAgent:
 
         agent = await self._async_agent_user()
         if agent is None:
-            _LOGGER.warning("Orchestra could not find the agent account to re-issue its token")
+            _LOGGER.warning("Overture could not find the agent account to re-issue its token")
             return
         old = [t for t in agent.refresh_tokens.values() if t.token_type == TOKEN_TYPE_LONG_LIVED_ACCESS_TOKEN]
         refresh = await self.hass.auth.async_create_refresh_token(
             agent,
-            client_name=f"Orchestra agent ({time.strftime('%Y-%m-%d')})",
+            client_name=f"Overture agent ({time.strftime('%Y-%m-%d')})",
             token_type=TOKEN_TYPE_LONG_LIVED_ACCESS_TOKEN,
             access_token_expiration=timedelta(days=3650),
         )
@@ -559,7 +559,7 @@ class OrchestraSetupAgent:
     async def _async_login_provider(self) -> Any:
         provider = next((p for p in self.hass.auth.auth_providers if p.type == "homeassistant"), None)
         if provider is None:
-            _LOGGER.warning("Orchestra could not find the Home Assistant login provider")
+            _LOGGER.warning("Overture could not find the Home Assistant login provider")
             return None
         await provider.async_initialize()
         return provider
@@ -572,7 +572,7 @@ class OrchestraSetupAgent:
             if await async_setup_component(self.hass, "person", {}):
                 await person.async_create_person(self.hass, name, user_id=user_id)
         except Exception as err:
-            _LOGGER.debug("Orchestra could not create a person for %s: %s", name, err)
+            _LOGGER.debug("Overture could not create a person for %s: %s", name, err)
 
     # ------------------------------------------------------------------ punch list
 
@@ -670,12 +670,12 @@ class OrchestraSetupAgent:
     @callback
     def _async_notify_starting(self, created: list[str]) -> None:
         logins = self.state.get("logins_created", [])
-        lines = ["Orchestra is waiting for Home Assistant to finish finding your devices, then it "
+        lines = ["Overture is waiting for Home Assistant to finish finding your devices, then it "
                  "will set them up. This takes up to 15 minutes."]
         if logins:
             lines.append("Your logins are ready: " + ", ".join(logins) + ".")
         persistent_notification.async_create(
-            self.hass, "\n\n".join(lines), title="Orchestra is setting up your home", notification_id=NOTIFICATION_ID
+            self.hass, "\n\n".join(lines), title="Overture is setting up your home", notification_id=NOTIFICATION_ID
         )
 
     @callback
@@ -690,7 +690,7 @@ class OrchestraSetupAgent:
             lines.append("Connected these to Conductor:\n" + "\n".join(f"- {n}" for n in notes))
         dashboard = report.get("dashboard") or {}
         if dashboard.get("url"):
-            lines.append(f"Your home's dashboard is ready: [Orchestra]({dashboard['url']}) in the sidebar.")
+            lines.append(f"Your home's dashboard is ready: [Overture]({dashboard['url']}) in the sidebar.")
         users = report.get("users") or []
         if users:
             lines.append("Created logins: " + ", ".join(users) + ".")
@@ -699,8 +699,8 @@ class OrchestraSetupAgent:
         open_items = self.open_items
         if open_items:
             lines.append(
-                f"**{len(open_items)} things need you.** They are on the Orchestra setup "
-                "punch list (To-do lists → Orchestra setup):\n"
+                f"**{len(open_items)} things need you.** They are on the Overture setup "
+                "punch list (To-do lists → Overture setup):\n"
                 + "\n".join(f"- {i['summary']}" for i in open_items)
             )
         else:
@@ -708,7 +708,7 @@ class OrchestraSetupAgent:
         persistent_notification.async_create(
             self.hass,
             "\n\n".join(lines),
-            title="Orchestra has set up your home",
+            title="Overture has set up your home",
             notification_id=NOTIFICATION_ID,
         )
 

@@ -1,8 +1,8 @@
 """
-HVAC setpoint drift held by the Orchestra integration (`orchestra.apply_hvac_offset`).
+HVAC setpoint drift held by the Overture integration (`orchestra.apply_hvac_offset`).
 
 The HVAC blueprint calls this on every offset change, A/C mode change, automation save,
-HA start and every few minutes. Orchestra remembers each A/C's starting setpoint and
+HA start and every few minutes. Overture remembers each A/C's starting setpoint and
 the target it last set, so each call is idempotent: it sets starting setpoint + current
 offset, never compounding, and restores the starting setpoint when the offset is 0.
 A setpoint changed by hand mid-drift becomes the new starting point.
@@ -139,7 +139,7 @@ def plan_mode(
 ) -> tuple[str | None, dict[str, Any] | None, str | None]:
     """
     Work out the HVAC mode to set (None = leave it), what to remember next
-    (None = nothing held), and a reason when the mode changes. Only a unit Orchestra
+    (None = nothing held), and a reason when the mode changes. Only a unit Overture
     switched on itself is switched back.
     """
     if hvac_mode in UNAVAILABLE_STATES:
@@ -203,7 +203,7 @@ class HvacDriftController:
         offset_sensor = call.data.get("offset_sensor", DEFAULT_OFFSET_SENSOR)
         offset_state = self.hass.states.get(offset_sensor)
         if offset_state is None or offset_state.state in UNAVAILABLE_STATES:
-            _LOGGER.info("Orchestra HVAC drift skipped: %s is %s", offset_sensor,
+            _LOGGER.info("Overture HVAC drift skipped: %s is %s", offset_sensor,
                          offset_state.state if offset_state else "missing")
             return {"skipped": f"{offset_sensor} is {offset_state.state if offset_state else 'missing'}"}
         try:
@@ -270,7 +270,7 @@ class HvacDriftController:
         }
         if set_mode is not None:
             result["new_hvac_mode"] = set_mode
-        (_LOGGER.info if target is not None else _LOGGER.debug)("Orchestra HVAC drift %s: %s", entity_id, result)
+        (_LOGGER.info if target is not None else _LOGGER.debug)("Overture HVAC drift %s: %s", entity_id, result)
         if target is not None:
             await self.hass.services.async_call(
                 "climate",

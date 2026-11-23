@@ -143,7 +143,7 @@ class RhythmEngine:
             try:
                 callback()
             except Exception as err:  # one broken entity mustn't stop the rest
-                _LOGGER.error("Orchestra rhythm listener failed: %s", err)
+                _LOGGER.error("Overture rhythm listener failed: %s", err)
 
     def _count(self, key: str, amount: int = 1) -> None:
         if self.counters.get("date") != self._today().isoformat():
@@ -368,7 +368,7 @@ class RhythmEngine:
                 context=getattr(call, "context", None),
             )
         except Exception as err:  # one stuck blind mustn't stop the others
-            _LOGGER.warning("Orchestra rhythm could not %s %s: %s", service, entity_id, err)
+            _LOGGER.warning("Overture rhythm could not %s %s: %s", service, entity_id, err)
 
     # ---------------------------------------------------------------- household controls
     async def async_skip_today(self, _call: Any = None) -> None:
@@ -452,17 +452,17 @@ class RhythmEngine:
         for service in targets:
             try:
                 await self.hass.services.async_call(
-                    "notify", service, {"title": "Orchestra today", "message": text, "data": data}, blocking=True
+                    "notify", service, {"title": "Overture today", "message": text, "data": data}, blocking=True
                 )
             except Exception as err:
-                _LOGGER.warning("Orchestra heads-up not sent to notify.%s: %s", service, err)
+                _LOGGER.warning("Overture heads-up not sent to notify.%s: %s", service, err)
         if not targets:
             from homeassistant.components import persistent_notification
 
             persistent_notification.async_create(
                 self.hass,
-                text + " Skip today and Cooler please are on the Orchestra dashboard.",
-                title="Orchestra today",
+                text + " Skip today and Cooler please are on the Overture dashboard.",
+                title="Overture today",
                 notification_id=HEADSUP_TAG,
             )
         return text

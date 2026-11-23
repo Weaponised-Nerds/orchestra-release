@@ -1,5 +1,5 @@
 blueprint:
-  name: Orchestra - Peak quiet
+  name: Overture - Peak quiet
   description: >-
     Holds the heavy loads you pick (pool pump, EV charging switch, spa heater and the
     like) off through the evening peak, 4 pm to 9 pm by default, then switches back on
@@ -11,7 +11,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_peak_quiet.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_peak_quiet.yaml
   input:
     loads:
       name: Heavy loads to hold off
@@ -22,7 +22,7 @@ blueprint:
             - domain: [switch, input_boolean]
           multiple: true
     today_calendar:
-      name: Orchestra today calendar
+      name: Overture today calendar
       default: calendar.orchestra_today
       selector:
         entity:

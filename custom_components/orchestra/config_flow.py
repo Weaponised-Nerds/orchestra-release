@@ -1,4 +1,4 @@
-"""Zero-click and Form-based Config Flow for the Orchestra Custom Component."""
+"""Zero-click and Form-based Config Flow for the Overture Custom Component."""
 
 from __future__ import annotations
 
@@ -119,7 +119,7 @@ except ImportError:
 
 
 class OrchestraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handles automated and UI config flow creation for the Orchestra integration."""
+    """Handles automated and UI config flow creation for the Overture integration."""
 
     VERSION = 1
 
@@ -144,7 +144,7 @@ class OrchestraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             return self.async_create_entry(
-                title="Orchestra",
+                title="Overture",
                 data=user_input,
             )
 
@@ -179,7 +179,7 @@ class OrchestraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if current_entries:
             return self.async_abort(reason="already_configured")
-        return self.async_create_entry(title="Orchestra", data=import_data or {})
+        return self.async_create_entry(title="Overture", data=import_data or {})
 
 
 # Direct reference for backward compatibility / HA reflection

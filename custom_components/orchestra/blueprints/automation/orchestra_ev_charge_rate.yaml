@@ -1,5 +1,5 @@
 blueprint:
-  name: Orchestra - EV charge rate from Conductor
+  name: Overture - EV charge rate from Conductor
   description: >-
     Sets an EV charger's current from the Conductor `ev` directive
     (`target_amps`, `charge_now`, `enabled`).
@@ -14,7 +14,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_ev_charge_rate.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_ev_charge_rate.yaml
   input:
     charger_current:
       name: Charger current limit
@@ -42,7 +42,7 @@ blueprint:
           step: 1
           unit_of_measurement: A
     amps_sensor:
-      name: Orchestra EV target amps sensor
+      name: Overture EV target amps sensor
       default: sensor.orchestra_ev_target_amps
       selector:
         entity:

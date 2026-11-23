@@ -1,4 +1,4 @@
-"""Base Entity definitions for the Orchestra Home Assistant component."""
+"""Base Entity definitions for the Overture Home Assistant component."""
 
 from __future__ import annotations
 
@@ -93,7 +93,7 @@ except ImportError:
 
 
 class OrchestraBaseEntity(CoordinatorEntity):
-    """Common base for all Orchestra entities."""
+    """Common base for all Overture entities."""
 
     _attr_has_entity_name = True
 
@@ -130,7 +130,7 @@ class OrchestraBaseEntity(CoordinatorEntity):
     def device_info(self) -> Any:
         return {
             "identifiers": {(DOMAIN, "orchestra_gateway")},
-            "name": "Orchestra Gateway",
+            "name": "Overture Gateway",
             "manufacturer": "Weaponised Nerds",
             "model": "WEM Predictive Micro-Node",
             "sw_version": "0.3.2",

@@ -16,7 +16,7 @@ class OrchestraTodaySensor(RhythmEntity, SensorEntity):
 
     def __init__(self, engine: Any) -> None:
         super().__init__(engine, "today", "sensor.orchestra_today")
-        self._attr_name = "Orchestra today"
+        self._attr_name = "Overture today"
         self._attr_icon = "mdi:weather-sunny-alert"
 
     @property
@@ -70,13 +70,13 @@ def rhythm_sensors(engine: Any) -> list[Any]:
     return [
         OrchestraTodaySensor(engine),
         OrchestraRhythmCounter(
-            engine, "actions", "sensor.orchestra_rhythm_actions_today", "Orchestra rhythm actions today", "mdi:counter"
+            engine, "actions", "sensor.orchestra_rhythm_actions_today", "Overture rhythm actions today", "mdi:counter"
         ),
         OrchestraRhythmCounter(
-            engine, "skips", "sensor.orchestra_rhythm_skips_today", "Orchestra skips today", "mdi:calendar-remove"
+            engine, "skips", "sensor.orchestra_rhythm_skips_today", "Overture skips today", "mdi:calendar-remove"
         ),
         OrchestraRhythmCounter(
-            engine, "cooler", "sensor.orchestra_cooler_please_today", "Orchestra cooler please today",
+            engine, "cooler", "sensor.orchestra_cooler_please_today", "Overture cooler please today",
             "mdi:snowflake-alert",
         ),
     ]
@@ -88,7 +88,7 @@ class OrchestraRhythmSwitch(RhythmEntity, SwitchEntity):
     def __init__(self, engine: Any, rhythm: str) -> None:
         super().__init__(engine, f"switch_{rhythm}", f"switch.orchestra_rhythm_{rhythm}")
         self._rhythm = rhythm
-        self._attr_name = f"Orchestra rhythm: {RHYTHMS[rhythm].lower()}"
+        self._attr_name = f"Overture rhythm: {RHYTHMS[rhythm].lower()}"
         self._attr_icon = "mdi:sun-clock"
 
     @property

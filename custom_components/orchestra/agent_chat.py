@@ -1,9 +1,9 @@
 """
-Orchestra setup assistant: a Claude agent that runs inside Home Assistant.
+Overture setup assistant: a Claude agent that runs inside Home Assistant.
 
-The homeowner chats with it in the Orchestra drawer (on every HA page, including the
-Companion app) or the "Orchestra Assistant" sidebar panel. Nothing else needs installing: the
-agent loop runs here, calls the Orchestra Setup tools (`setup_tools.py`) in-process, and
+The homeowner chats with it in the Overture drawer (on every HA page, including the
+Companion app) or the "Overture Assistant" sidebar panel. Nothing else needs installing: the
+agent loop runs here, calls the Overture Setup tools (`setup_tools.py`) in-process, and
 sends the conversation to Conductor's relay, which holds the API key and the per-box limits.
 
 Conversations live in memory only, per HA user, and are never stored on disk or by Conductor.
@@ -39,7 +39,7 @@ RELAY_TIMEOUT = aiohttp.ClientTimeout(total=300)
 
 SYSTEM_PROMPT = (
     SETUP_PROMPT
-    + " You are the Orchestra setup assistant, shown in a chat drawer inside Home Assistant. "
+    + " You are the Overture setup assistant, shown in a chat drawer inside Home Assistant. "
     "Keep replies short: a few sentences, plain words, no tables. The person can attach "
     "photos from their phone camera. When there is nothing left to do, say so."
 )
@@ -156,7 +156,7 @@ class OrchestraChatAgent:
             except vol.Invalid as err:
                 result, is_error = {"error": f"Invalid arguments: {err}"}, True
             except Exception as err:  # a tool must never end the conversation
-                _LOGGER.exception("Orchestra setup tool %s failed", block["name"])
+                _LOGGER.exception("Overture setup tool %s failed", block["name"])
                 result, is_error = {"error": str(err)}, True
         return {
             "type": "tool_result",
@@ -171,7 +171,7 @@ class OrchestraChatAgent:
             async with session.post(
                 RELAY_URL,
                 json={"system": SYSTEM_PROMPT, "tools": tools, "messages": messages},
-                headers={"X-Orchestra-Box": self.box_id},
+                headers={"X-Overture-Box": self.box_id},
                 timeout=RELAY_TIMEOUT,
             ) as resp:
                 body = await resp.json(content_type=None)
@@ -182,7 +182,7 @@ class OrchestraChatAgent:
                     raise RelayError(detail or f"The assistant is unavailable right now ({resp.status}).")
                 return body
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as err:
-            raise RelayError("Couldn't reach the Orchestra assistant. Check the internet connection and try again.") from err
+            raise RelayError("Couldn't reach the Overture assistant. Check the internet connection and try again.") from err
 
 
 class RelayError(Exception):
@@ -259,7 +259,7 @@ def ws_send(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg
     """A subscription: each step of the agent's answer arrives as an event, then `done`."""
     agent = _agent(hass)
     if agent is None:
-        connection.send_error(msg["id"], "not_ready", "The Orchestra assistant is not running.")
+        connection.send_error(msg["id"], "not_ready", "The Overture assistant is not running.")
         return
     msg_id = msg["id"]
 
@@ -296,7 +296,7 @@ async def ws_claim(hass: HomeAssistant, connection: websocket_api.ActiveConnecti
 
     setup_agent = hass.data.get(DOMAIN, {}).get("setup_agent")
     if setup_agent is None:
-        connection.send_error(msg["id"], "not_ready", "This box has no Orchestra setup to finish.")
+        connection.send_error(msg["id"], "not_ready", "This box has no Overture setup to finish.")
         return
     try:
         username = await setup_agent.async_claim(msg["name"], msg["username"], msg["password"])

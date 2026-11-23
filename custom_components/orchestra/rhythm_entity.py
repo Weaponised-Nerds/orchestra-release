@@ -20,7 +20,7 @@ class RhythmEntity(Entity):
 
     @property
     def device_info(self) -> Any:
-        return {"identifiers": {(DOMAIN, "orchestra_gateway")}, "name": "Orchestra Gateway"}
+        return {"identifiers": {(DOMAIN, "orchestra_gateway")}, "name": "Overture Gateway"}
 
     async def async_added_to_hass(self) -> None:
         self.async_on_remove(self.engine.async_add_listener(self.async_write_ha_state))

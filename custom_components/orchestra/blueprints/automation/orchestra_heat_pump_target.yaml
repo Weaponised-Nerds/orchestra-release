@@ -1,5 +1,5 @@
 blueprint:
-  name: Orchestra - Heat pump from Conductor
+  name: Overture - Heat pump from Conductor
   description: >-
     Runs a heat pump from Conductor signals. Energy Soak switches it on at its Boost
     setpoint, Load Shed switches it off at its Coast setpoint, and back on Normal it
@@ -20,7 +20,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_pump_target.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_heat_pump_target.yaml
   input:
     water_heater:
       name: Heat pump (water heater, climate or switch)
@@ -78,7 +78,7 @@ blueprint:
       selector:
         text: {}
     target_sensor:
-      name: Orchestra heat pump target sensor
+      name: Overture heat pump target sensor
       default: sensor.orchestra_heat_pump_target_temp
       selector:
         entity:

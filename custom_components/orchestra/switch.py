@@ -1,4 +1,4 @@
-"""Platform for Orchestra switch entities."""
+"""Platform for Overture switch entities."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ async def async_setup_entry(
     entry: Any,
     async_add_entities: Any,
 ) -> None:
-    """Set up Orchestra switches from a config entry."""
+    """Set up Overture switches from a config entry."""
     coordinator: OrchestraDataUpdateCoordinator = hass.data[DOMAIN]["coordinator"]
     async_add_entities(
         [

@@ -1,5 +1,5 @@
 # Conductor theme for Home Assistant, from Conductor's brand tokens (deep teal surfaces,
-# bright teal actions, ochre accents). Installed and applied by Orchestra.
+# bright teal actions, ochre accents). Installed and applied by Overture.
 Conductor:
   modes:
     dark:

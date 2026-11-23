@@ -1,6 +1,6 @@
-// Orchestra setup assistant for the Home Assistant frontend (also inside the Companion app).
+// Overture setup assistant for the Home Assistant frontend (also inside the Companion app).
 //
-// Loaded on every page by the Orchestra integration. It adds an "Orchestra Assistant" tab on the right edge
+// Loaded on every page by the Overture integration. It adds an "Overture Assistant" tab on the right edge
 // that opens a chat drawer, and defines <orchestra-agent-panel> for the full-page sidebar
 // panel. Both talk to the agent over Home Assistant's own websocket (orchestra/agent/*), so
 // the chat runs as the signed-in person and needs no other login. Admins only.
@@ -88,7 +88,7 @@ class OrchestraAgentChat extends HTMLElement {
       <style>${STYLE}</style>
       <div class="chat">
         <header>
-          <h2>Orchestra Assistant</h2>
+          <h2>Overture Assistant</h2>
           <button class="reset" title="Start a new conversation">New chat</button>
           ${closable ? '<button class="close" title="Close">Close</button>' : ""}
         </header>
@@ -134,7 +134,7 @@ class OrchestraAgentChat extends HTMLElement {
         this._hass.callWS({ type: "orchestra/agent/status" }),
       ]);
     } catch (err) {
-      this._add("error", "The setup assistant isn't available. Restart Home Assistant after updating Orchestra.");
+      this._add("error", "The setup assistant isn't available. Restart Home Assistant after updating Overture.");
       return;
     }
     if (status.claim_needed) {
@@ -174,7 +174,7 @@ class OrchestraAgentChat extends HTMLElement {
     box.className = "claim";
     box.innerHTML = `
       <h3>Make this home yours</h3>
-      <p>This box is still signed in with the shared Orchestra setup account. Create your own login now.
+      <p>This box is still signed in with the shared Overture setup account. Create your own login now.
         After that, the shared account is locked and you'll sign in as yourself. Your password stays in
         Home Assistant: the assistant never sees it.</p>
       <label>Your name<input name="name" autocomplete="name" required></label>
@@ -295,7 +295,7 @@ class OrchestraAgentChat extends HTMLElement {
 }
 customElements.get("orchestra-agent-chat") || customElements.define("orchestra-agent-chat", OrchestraAgentChat);
 
-// Full-page sidebar panel ("Orchestra Assistant")
+// Full-page sidebar panel ("Overture Assistant")
 class OrchestraAgentPanel extends HTMLElement {
   set hass(hass) {
     if (!this._chat) {
@@ -312,7 +312,7 @@ class OrchestraAgentPanel extends HTMLElement {
 }
 customElements.get("orchestra-agent-panel") || customElements.define("orchestra-agent-panel", OrchestraAgentPanel);
 
-// The "Orchestra Assistant" tab and drawer on every page
+// The "Overture Assistant" tab and drawer on every page
 (function addDrawer() {
   if (window.__orchestraAgentDrawer) return;
   window.__orchestraAgentDrawer = true;
@@ -341,7 +341,7 @@ customElements.get("orchestra-agent-panel") || customElements.define("orchestra-
         .drawer.open { transform: none; }
         orchestra-agent-chat { display: block; height: 100%; }
       </style>
-      <button class="tab" title="Orchestra Assistant">Orchestra Assistant <span class="badge" hidden></span></button>
+      <button class="tab" title="Overture Assistant">Overture Assistant <span class="badge" hidden></span></button>
       <div class="drawer"><orchestra-agent-chat closable></orchestra-agent-chat></div>`;
     document.body.appendChild(host);
 
@@ -370,7 +370,7 @@ customElements.get("orchestra-agent-panel") || customElements.define("orchestra-
         const waiting = status.open_items + status.waiting_devices;
         badge.hidden = !waiting && !status.claim_needed;
         badge.textContent = status.claim_needed ? "!" : waiting;
-        // Open once by itself on a fresh Orchestra box, so nobody has to find the tab
+        // Open once by itself on a fresh Overture box, so nobody has to find the tab
         let greeted = false;
         try { greeted = localStorage.getItem("orchestra-agent-greeted") === "1"; } catch (err) {}
         // and once per page load until someone has made the home theirs

@@ -112,13 +112,13 @@ class ConductorSubscriber:
             try:
                 self.hass.components.webhook.async_register(
                     DOMAIN,
-                    "Orchestra Conductor Dispatch Ingress",
+                    "Overture Conductor Dispatch Ingress",
                     self.webhook_id,
                     self.handle_webhook_request,
                 )
                 self._webhook_registered = True
                 _LOGGER.info(
-                    "Registered Orchestra Conductor webhook: /api/webhook/%s",
+                    "Registered Overture Conductor webhook: /api/webhook/%s",
                     self.webhook_id,
                 )
             except Exception as err:

@@ -1,10 +1,10 @@
 """
 The Conductor theme for Home Assistant.
 
-Orchestra ships the theme (`themes/conductor.yaml`, light and dark modes from Conductor's
-brand tokens). Installing it copies the file into `<config>/themes/`, which the Orchestra
+Overture ships the theme (`themes/conductor.yaml`, light and dark modes from Conductor's
+brand tokens). Installing it copies the file into `<config>/themes/`, which the Overture
 image's configuration.yaml loads, and reloads themes. Where configuration.yaml doesn't load
-that folder (a plain HACS install), Orchestra adds the theme to the frontend directly and
+that folder (a plain HACS install), Overture adds the theme to the frontend directly and
 again on every start. Applying it makes it Home Assistant's default theme in both modes, so
 everyone on "Use default theme" sees it; a person who picked another theme keeps theirs.
 """
@@ -40,7 +40,7 @@ async def async_install_theme(hass: HomeAssistant, apply: bool = True) -> dict[s
     inject = THEME_NAME not in themes
     if inject:
         await async_inject_theme(hass)
-        loaded_from = "Orchestra (configuration.yaml doesn't load the themes folder)"
+        loaded_from = "Overture (configuration.yaml doesn't load the themes folder)"
     await Store(hass, 1, THEME_STORE_KEY).async_save({"inject": inject, "applied": apply})
     if apply:
         await _async_set_default(hass)

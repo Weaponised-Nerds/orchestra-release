@@ -1,13 +1,13 @@
 """
-Orchestra Setup tools: lets an AI agent finish setup with the homeowner.
+Overture Setup tools: lets an AI agent finish setup with the homeowner.
 
-Registers an LLM tool set called "Orchestra Setup". Home Assistant's MCP Server publishes
+Registers an LLM tool set called "Overture Setup". Home Assistant's MCP Server publishes
 it (pick it next to Assist when adding the MCP Server integration), so an agent such as
 Claude can read the setup punch list, see what each discovered device is waiting for,
 and submit the pairing code, serial number or choice the person gives it.
 
 The tools drive config flows, name devices and entities, put them in rooms, and assign
-equipment to the Orchestra blueprints, and read and change add-on settings: the same steps
+equipment to the Overture blueprints, and read and change add-on settings: the same steps
 a person takes in Settings. They cannot delete devices, integrations, entities or add-ons,
 never see logins or add-on passwords, and every tool needs an admin user, because those
 settings pages do.
@@ -24,12 +24,12 @@ from .const import DOMAIN
 from .schema import to_field_list, vol
 
 SETUP_API_ID = "orchestra_setup"
-SETUP_API_NAME = "Orchestra Setup"
+SETUP_API_NAME = "Overture Setup"
 MAX_DEVICES = 200
 MAX_ENTITIES = 150
 
 SETUP_PROMPT = (
-    "You are helping a homeowner finish setting up their Orchestra home energy system in "
+    "You are helping a homeowner finish setting up their Overture home energy system in "
     "Home Assistant. Many of them are not technical. Start with orchestra_get_setup_list. "
     "Work through one item at a time, say in plain words what you need and where to find "
     "it (for example 'the 4-digit code now showing on the TV' or 'the serial number on the "
@@ -39,7 +39,7 @@ SETUP_PROMPT = (
     "the exact field names. Steps that need a sign-in on a vendor's website are parked for "
     "now: tell the person it uses the maker's cloud and leave it on the list. Never ask for, "
     "repeat or submit the person's own Home Assistant password: if the list says the home "
-    "has no owner login yet, point them to the 'Make this home yours' form in the Orchestra Assistant drawer. "
+    "has no owner login yet, point them to the 'Make this home yours' form in the Overture Assistant drawer. "
     "Before saying an integration isn't connected, check orchestra_list_integrations. "
     "Once devices are set up, organise the home: for the key energy equipment (solar, home "
     "batteries, EV chargers, air conditioning, heat pumps and hot water) and anything the person "
@@ -47,18 +47,18 @@ SETUP_PROMPT = (
     "would use (room plus what it is, such as 'Garage EV charger'), put each device in its "
     "room and label it. Propose the changes in a short list and make them after the person "
     "says yes. Then assign each air conditioner (or its zones), heat pump or hot water "
-    "system, EV charger and home battery to its Orchestra blueprint with "
+    "system, EV charger and home battery to its Overture blueprint with "
     "orchestra_assign_equipment, checking orchestra_get_equipment_assignments first so "
-    "nothing is assigned twice. Solar has no Orchestra blueprint yet: name it, place it and "
+    "nothing is assigned twice. Solar has no Overture blueprint yet: name it, place it and "
     "label it. Entity ids stay as they are, so existing automations keep working. "
     "Community integrations, cards and themes come from Settings > Marketplace (it replaced "
-    "HACS in Home Assistant 2026.11; HACS can't be installed any more). Orchestra keeps itself "
+    "HACS in Home Assistant 2026.11; HACS can't be installed any more). Overture keeps itself "
     "up to date until the Marketplace tracks it: use orchestra_check_updates and "
     "orchestra_install_update when asked, and if the result says the Marketplace manages it, "
     "point the person to Settings > Updates. Installing an update needs a restart; ask before calling "
     "orchestra_restart_home_assistant and warn that this chat starts over afterwards. "
     "orchestra_apply_theme gives Home Assistant the Conductor look. "
-    "Once equipment is assigned, orchestra_build_dashboard lays out the Orchestra dashboard; run "
+    "Once equipment is assigned, orchestra_build_dashboard lays out the Overture dashboard; run "
     "it again after assigning more equipment. "
     "Add-ons (apps that run beside Home Assistant, such as Mosquitto or Zigbee2MQTT): "
     "orchestra_list_addons shows what is installed and searches the store; read an add-on's "
@@ -71,12 +71,12 @@ SETUP_PROMPT = (
 
 
 def async_register_setup_tools(hass: HomeAssistant) -> Callable[[], None]:
-    """Make the Orchestra Setup tool set available to MCP Server and other LLM clients."""
+    """Make the Overture Setup tool set available to MCP Server and other LLM clients."""
     return llm.async_register_api(hass, OrchestraSetupAPI(hass=hass, id=SETUP_API_ID, name=SETUP_API_NAME))
 
 
 class OrchestraSetupAPI(llm.API):
-    """The Orchestra Setup tool set."""
+    """The Overture Setup tool set."""
 
     async def async_get_api_instance(self, llm_context: llm.LLMContext) -> llm.APIInstance:
         return llm.APIInstance(
@@ -137,7 +137,7 @@ class _AdminTool(llm.Tool):
 class GetSetupListTool(_AdminTool):
     name = "orchestra_get_setup_list"
     description = (
-        "List what still needs the homeowner: the Orchestra setup punch list and every "
+        "List what still needs the homeowner: the Overture setup punch list and every "
         "discovered device whose setup is waiting, with the flow_id to use for it."
     )
 
@@ -230,7 +230,7 @@ class StartAddingIntegrationTool(_AdminTool):
 class MarkSetupItemDoneTool(_AdminTool):
     name = "orchestra_mark_setup_item_done"
     description = (
-        "Tick an Orchestra setup list item off once the person has done it (or untick it), "
+        "Tick an Overture setup list item off once the person has done it (or untick it), "
         "by its key from orchestra_get_setup_list."
     )
     parameters = vol.Schema({vol.Required("key"): str, vol.Optional("done", default=True): bool})
@@ -438,7 +438,7 @@ class UpdateEntityTool(_AdminTool):
 class GetEquipmentAssignmentsTool(_AdminTool):
     name = "orchestra_get_equipment_assignments"
     description = (
-        "Show which equipment follows Conductor through the Orchestra blueprints, and the "
+        "Show which equipment follows Conductor through the Overture blueprints, and the "
         "kinds of equipment that can be assigned with what each needs."
     )
 
@@ -464,7 +464,7 @@ class GetEquipmentAssignmentsTool(_AdminTool):
 class AssignEquipmentTool(_AdminTool):
     name = "orchestra_assign_equipment"
     description = (
-        "Make a piece of equipment follow Conductor, or join a daily rhythm, by filling its Orchestra "
+        "Make a piece of equipment follow Conductor, or join a daily rhythm, by filling its Overture "
         "blueprint. kind is air_conditioning, heat_pump, ev_charger or home_battery, or a rhythm: "
         "heat_shield, morning_open_up or peak_quiet; entities is the entity it controls (for "
         "air_conditioning and the rhythms, every entity in the list, which replaces it). "
@@ -495,7 +495,7 @@ class RemoveEquipmentAssignmentTool(_AdminTool):
     name = "orchestra_remove_equipment_assignment"
     description = (
         "Stop a piece of equipment following Conductor, by the automation_id from "
-        "orchestra_get_equipment_assignments. Only Orchestra blueprint automations can be removed."
+        "orchestra_get_equipment_assignments. Only Overture blueprint automations can be removed."
     )
     parameters = vol.Schema({vol.Required("automation_id"): str})
 
@@ -515,7 +515,7 @@ class RemoveEquipmentAssignmentTool(_AdminTool):
 
 class CheckUpdatesTool(_AdminTool):
     name = "orchestra_check_updates"
-    description = "Check for a newer Orchestra release, and whether the Marketplace or Orchestra keeps it up to date."
+    description = "Check for a newer Overture release, and whether the Marketplace or Overture keeps it up to date."
 
     async def _async_run(self, hass: HomeAssistant, args: dict[str, Any]) -> dict[str, Any]:
         from .component_updates import COMPONENTS, UpdateError, async_check
@@ -532,7 +532,7 @@ class CheckUpdatesTool(_AdminTool):
 class InstallUpdateTool(_AdminTool):
     name = "orchestra_install_update"
     description = (
-        "Install the latest Orchestra release from GitHub when the Marketplace doesn't manage "
+        "Install the latest Overture release from GitHub when the Marketplace doesn't manage "
         "it. A restart is needed afterwards."
     )
     parameters = vol.Schema({vol.Optional("component", default="orchestra"): vol.In(["orchestra"])})
@@ -580,9 +580,9 @@ class ApplyThemeTool(_AdminTool):
 class BuildDashboardTool(_AdminTool):
     name = "orchestra_build_dashboard"
     description = (
-        "Make the Orchestra dashboard (sidebar: Orchestra) from the equipment assigned to the "
-        "Orchestra blueprints: today's Conductor signal and the household's choices, daily rhythms, "
-        "the equipment, Orchestra's automations and what they did, the market signal, and an Energy "
+        "Make the Overture dashboard (sidebar: Overture) from the equipment assigned to the "
+        "Overture blueprints: today's Conductor signal and the household's choices, daily rhythms, "
+        "the equipment, Overture's automations and what they did, the market signal, and an Energy "
         "view with the energy flow and solar, battery, home and car graphs. Fills the Energy "
         "dashboard settings only when they are empty. If the person has edited the dashboard it is "
         "left alone unless replace is true; ask before replacing their edits."

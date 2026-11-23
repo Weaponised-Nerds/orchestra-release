@@ -1,5 +1,5 @@
 """
-The Orchestra dashboard the setup agent builds once the blueprints are filled.
+The Overture dashboard the setup agent builds once the blueprints are filled.
 
 Kept free of Home Assistant imports, like `setup_planner.py`, so the rules can be tested on
 their own. `dashboard_builder.py` feeds it from the live registries and saves the result.
@@ -7,8 +7,8 @@ their own. `dashboard_builder.py` feeds it from the live registries and saves th
 The dashboard only uses cards that ship with Home Assistant, so it works on a fresh box
 with no custom cards installed. Every card is built from what this home actually has:
 - Home: what Conductor is asking for and the household's choices (opt-outs, rhythm
-  switches, Skip today), today's rhythms, the equipment Orchestra drives, the Orchestra
-  automations, what Orchestra did lately, and the market signal history.
+  switches, Skip today), today's rhythms, the equipment Overture drives, the Overture
+  automations, what Overture did lately, and the market signal history.
 - Energy: Home Assistant's own energy flow, then solar, home battery, home use and car,
   each with its own graph.
 
@@ -41,10 +41,10 @@ except ImportError:
     from custom_components.orchestra.setup_planner import EntityInfo
 
 DASHBOARD_URL_PATH = "orchestra-home"
-DASHBOARD_TITLE = "Orchestra"
+DASHBOARD_TITLE = "Overture"
 DASHBOARD_ICON = "mdi:music-clef-treble"
 
-# Orchestra's own entities, by unique id. Entity ids differ per box (the device name is in
+# Overture's own entities, by unique id. Entity ids differ per box (the device name is in
 # them), so the dashboard always looks them up through the entity registry.
 UID_CONTROL_SIGNAL = "orchestra_conductor_control_signal"
 UID_DISPATCH_MODE = "orchestra_conductor_dispatch_mode"
@@ -120,7 +120,7 @@ class EnergyRoles:
 
 
 def orchestra_automations(automations: Iterable[Any]) -> list[dict[str, Any]]:
-    """The automations built on Orchestra's blueprints, whoever made them."""
+    """The automations built on Overture's blueprints, whoever made them."""
     out = []
     for auto in automations:
         if not isinstance(auto, dict):
@@ -402,7 +402,7 @@ def _equipment_sections(
 
 
 def _orchestra_rows(orch: dict[str, str], eq: Equipment) -> list[dict[str, Any]]:
-    """Every Orchestra entity worth seeing, signals first, then what each asset is asked to do."""
+    """Every Overture entity worth seeing, signals first, then what each asset is asked to do."""
     rows: list[str] = []
     for uid in (UID_CONTROL_SIGNAL, UID_DISPATCH_MODE, UID_PRICE, UID_DEMAND, UID_RENEWABLES, UID_SHED, UID_DIVIDEND):
         if orch.get(uid):
@@ -430,9 +430,9 @@ def build_dashboard(
     energy_prefs: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """
-    The Lovelace config for the Orchestra dashboard.
+    The Lovelace config for the Overture dashboard.
 
-    `orchestra_entities` maps Orchestra's unique ids to this box's entity ids,
+    `orchestra_entities` maps Overture's unique ids to this box's entity ids,
     `automations` are the agent's blueprint automations (as in automations.yaml) and
     `automation_entities` maps their ids to automation entity ids.
     """
@@ -441,7 +441,7 @@ def build_dashboard(
     roles = find_energy_roles(entities, eq)
     sources = (energy_prefs or {}).get("energy_sources") or []
 
-    # Home: Today (asks and choices), equipment, what Orchestra is doing, market
+    # Home: Today (asks and choices), equipment, what Overture is doing, market
     today: list[dict[str, Any]] = [_heading("Today", "mdi:calendar-today")]
     if orch.get(UID_CONTROL_SIGNAL):
         today.append(_tile(orch[UID_CONTROL_SIGNAL], "Conductor is asking for", grid_options={"columns": 12}))
@@ -458,10 +458,10 @@ def build_dashboard(
     equipment = _equipment_sections(entities, eq, orch, roles)
 
     autos = [automation_entities[a["id"]] for a in automations if automation_entities.get(a.get("id"))]
-    doing: list[dict[str, Any]] = [_heading("What Orchestra is doing", "mdi:music-clef-treble")]
+    doing: list[dict[str, Any]] = [_heading("What Overture is doing", "mdi:music-clef-treble")]
     if autos:
-        doing.append({"type": "entities", "title": "Orchestra automations", "show_header_toggle": False, "entities": autos})
-        doing.append({"type": "logbook", "title": "What Orchestra did", "hours_to_show": 24, "target": {"entity_id": autos}})
+        doing.append({"type": "entities", "title": "Overture automations", "show_header_toggle": False, "entities": autos})
+        doing.append({"type": "logbook", "title": "What Overture did", "hours_to_show": 24, "target": {"entity_id": autos}})
     rows = _orchestra_rows(orch, eq)
     if rows:
         doing.append({"type": "entities", "title": "What Conductor is asking for", "entities": rows})

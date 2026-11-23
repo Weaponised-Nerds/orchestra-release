@@ -3,7 +3,7 @@ What the household is told when a Conductor event starts (no Home Assistant impo
 
 Each notification says three things in plain words: what is happening, which of their
 own equipment responds and how, and why it is worth it. The "why" is the point: a
-household that understands the benefit keeps Orchestra switched on.
+household that understands the benefit keeps Overture switched on.
 
 Amounts of money appear only when they are known: a rate in the Conductor frame
 (`incentive`), or one the household or installer set for their retailer's program.
@@ -146,7 +146,7 @@ def compose_event_notice(
         return None
     battery_exports = "DISCHARGE" in str(dispatch.battery_action or "").upper() and bool(equipment.get("home_battery"))
     benefit = benefit_text(signal, market, incentive, battery_exports)
-    title = "Orchestra: soaking up spare solar" if signal == SIGNAL_ENERGY_SOAK else "Orchestra: easing off for the peak"
+    title = "Overture: soaking up spare solar" if signal == SIGNAL_ENERGY_SOAK else "Overture: easing off for the peak"
     tip = TIPS[day_of_year % len(TIPS)]
     message = "\n".join([*lines, "", benefit, "", tip])
     cooler = dispatch.ac_dispatch_mode == "shed" and bool(equipment.get("hvac")) and "hvac" not in (

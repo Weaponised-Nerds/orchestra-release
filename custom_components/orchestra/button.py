@@ -25,7 +25,7 @@ class OrchestraSkipTodayButton(RhythmEntity, ButtonEntity):
 
     def __init__(self, engine: Any) -> None:
         super().__init__(engine, "skip_today", "button.orchestra_skip_today")
-        self._attr_name = "Orchestra skip today"
+        self._attr_name = "Overture skip today"
         self._attr_icon = "mdi:calendar-remove"
 
     async def async_press(self) -> None:
@@ -37,7 +37,7 @@ class OrchestraCoolerPleaseButton(RhythmEntity, ButtonEntity):
 
     def __init__(self, engine: Any) -> None:
         super().__init__(engine, "cooler_please", "button.orchestra_cooler_please")
-        self._attr_name = "Orchestra cooler please"
+        self._attr_name = "Overture cooler please"
         self._attr_icon = "mdi:snowflake-alert"
 
     async def async_press(self) -> None:
@@ -50,7 +50,7 @@ class OrchestraSkipEventButton(RhythmEntity, ButtonEntity):
     def __init__(self, engine: Any, notifier: Any) -> None:
         super().__init__(engine, "skip_event", "button.orchestra_skip_event")
         self._notifier = notifier
-        self._attr_name = "Orchestra skip this event"
+        self._attr_name = "Overture skip this event"
         self._attr_icon = "mdi:debug-step-over"
 
     async def async_press(self) -> None:

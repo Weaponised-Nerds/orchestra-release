@@ -1,5 +1,5 @@
 """
-Installs the bundled Orchestra automation blueprints into a Home Assistant config dir.
+Installs the bundled Overture automation blueprints into a Home Assistant config dir.
 
 HACS only ships `custom_components/orchestra`, so the blueprints travel inside it and
 are copied to `<config>/blueprints/automation/orchestra/` on setup. The commissioning

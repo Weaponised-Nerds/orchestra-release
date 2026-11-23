@@ -1,5 +1,5 @@
 blueprint:
-  name: Orchestra - HVAC setpoint drift from Conductor
+  name: Overture - HVAC setpoint drift from Conductor
   description: >-
     Drifts air conditioner setpoints by the Conductor `hvac.setpoint_offset_c`
     directive, starting from whatever each one is currently set to, and puts them back
@@ -11,7 +11,7 @@ blueprint:
     the A/C's own setpoint follows them and ignores anything set on it directly.
 
 
-    Orchestra remembers the starting setpoint, so every frame sets starting setpoint +
+    Overture remembers the starting setpoint, so every frame sets starting setpoint +
     offset (1.5 then 2.0 on a 23 °C unit gives 24.5 then 25, never compounding), and an
     offset of 0 (normal schedule, outside this home's tranche, opt-out, or WAN fallback)
     restores it. A setpoint changed by hand mid-event becomes the new starting point.
@@ -21,7 +21,7 @@ blueprint:
   author: Weaponised Nerds
   homeassistant:
     min_version: "2024.10.0"
-  source_url: https://github.com/Weaponised-Nerds/orchestra-release/blob/main/custom_components/orchestra/blueprints/automation/orchestra_hvac_setpoint_offset.yaml
+  source_url: https://github.com/Weaponised-Nerds/overture/blob/main/custom_components/orchestra/blueprints/automation/orchestra_hvac_setpoint_offset.yaml
   input:
     climate_entity:
       name: Air conditioners or zones
@@ -31,7 +31,7 @@ blueprint:
           filter:
             - domain: climate
     offset_sensor:
-      name: Orchestra setpoint offset sensor
+      name: Overture setpoint offset sensor
       default: sensor.orchestra_hvac_setpoint_offset
       selector:
         entity:
@@ -63,7 +63,7 @@ blueprint:
         boolean: {}
     baseline_helper:
       name: Baseline setpoint helper (no longer used)
-      description: Orchestra now remembers the starting setpoint itself. Leave empty.
+      description: Overture now remembers the starting setpoint itself. Leave empty.
       default: ""
       selector:
         entity:
